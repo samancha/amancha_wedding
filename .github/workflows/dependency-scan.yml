@@ -1,0 +1,33 @@
+name: Dependency scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --json > audit.json || true
+          jq -r '.metadata.vulnerabilities | to_entries[] | "\(.key): \(.value)"' audit.json | sed -n '1,50p' || true
+
+      - name: Upload audit result
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit
+          path: audit.json

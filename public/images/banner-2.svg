@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+  <defs>
+    <linearGradient id="g2" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ffd6a5"/>
+      <stop offset="100%" stop-color="#fdffb6"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="600" fill="url(#g2)" />
+  <g fill="#2b2b2b" opacity="0.95" font-family="Inter, Arial" font-weight="600">
+    <text x="60" y="120" font-size="48">A Day to Remember</text>
+    <text x="60" y="180" font-size="28" opacity="0.95">Join us for the celebration</text>
+  </g>
+</svg>

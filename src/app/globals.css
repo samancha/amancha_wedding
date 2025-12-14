@@ -1,9 +1,69 @@
+/* Tahoe OS inspired fonts and palette */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --tahoe-cream: #FFFBF2;
+  --tahoe-lake: #1FA2A6;
+  --tahoe-slate: #5B6B73;
+  --tahoe-glass: rgba(255,255,255,0.7);
+  --accent: var(--tahoe-lake);
+  --accent-2: #0ea5a4; /* subtle secondary */
 }
+
+/* Neo 2025 theme overrides */
+.theme-neo {
+  --background: linear-gradient(180deg, #0f1724 0%, #081226 100%);
+  --foreground: #E6F2FF;
+  --accent: var(--accent-solid);
+  --accent-grad: linear-gradient(90deg,#7C3AED,#06B6D4);
+  --accent-2: #FFD166;
+  --neo-blob-1: rgba(124,58,237,0.18);
+  --neo-blob-2: rgba(6,182,212,0.14);
+  --accent-solid: #7C3AED;
+  --card-bg: rgba(10,11,16,0.6);
+  --glass-opacity: 0.12;
+  --font-scale: 1.03;
+}
+
+/* Future / more experimental theme */
+.theme-future {
+  --background: linear-gradient(180deg,#020617 0%,#071428 100%);
+  --foreground: #DFF6FF;
+  --accent: #00F5FF;
+  --accent-2: #7C3AED;
+  --font-scale: 1.06;
+  --font-family: 'Orbitron', Inter, Arial, sans-serif;
+}
+
+/* Future-specific glass card + neon effects */
+.theme-future .glass-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(0,255,255,0.06);
+  box-shadow: 0 8px 40px rgba(0,245,255,0.06), inset 0 1px 0 rgba(255,255,255,0.02);
+  transition: transform 280ms ease, box-shadow 280ms ease;
+  will-change: transform;
+}
+.theme-future .glass-card:hover {
+  transform: perspective(900px) rotateX(2.2deg) rotateY(-2.2deg) translateY(-3px) scale(1.006);
+}
+
+.theme-future .neo-accent-btn {
+  background: linear-gradient(90deg,#00F5FF 0%, #7C3AED 100%);
+  color: white;
+  box-shadow: 0 8px 40px rgba(0,245,255,0.12), 0 0 40px rgba(124,58,237,0.06);
+  animation: future-shine 4s linear infinite;
+}
+
+@keyframes future-shine {
+  0% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(20deg) brightness(1.04); }
+  100% { filter: hue-rotate(0deg); }
+}
+
 
 @theme inline {
   --color-background: var(--background);
@@ -22,5 +82,83 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-family, Inter), Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: calc(14px * var(--font-scale, 1));
 }
+
+/* Neo hero blobs and decoration */
+.theme-neo .neo-hero::before,
+.theme-neo .neo-hero::after {
+  content: '';
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 999px;
+  filter: blur(56px) saturate(120%);
+  z-index: 0;
+  animation: neo-pulse 6s ease-in-out infinite;
+}
+.theme-neo .neo-hero::before {
+  background: var(--neo-blob-1);
+  top: -80px;
+  left: -80px;
+}
+.theme-neo .neo-hero::after {
+  background: var(--neo-blob-2);
+  right: -100px;
+  bottom: -80px;
+}
+
+@keyframes neo-pulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.08); opacity: 0.8; }
+}
+
+/* Neo theme glass card */
+.theme-neo .glass-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.04);
+  backdrop-filter: blur(8px);
+}
+
+.theme-neo .neo-accent-btn {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 8px 30px rgba(124,58,237,0.12);
+}
+
+.theme-neo .neo-glow { box-shadow: 0 4px 30px rgba(6,182,212,0.12), 0 0 40px rgba(124,58,237,0.06); }
+
+/* Accessible focus outlines */
+:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--tahoe-lake) 60%, black 20%);
+  outline-offset: 2px;
+}
+
+/* Larger touch targets for mobile/Android */
+button, input[type="button"], input[type="submit"], a {
+  touch-action: manipulation;
+}
+
+/* Utility: soft glass card */
+.glass-card {
+  background: linear-gradient(180deg, var(--tahoe-cream), rgba(255,255,255,0.85));
+  border-radius: 1rem;
+  box-shadow: 0 8px 30px rgba(6, 14, 20, 0.08);
+}
+
+/* Gentle transitions + increased hit area for touch */
+button, a {
+  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+button:active, a:active { transform: translateY(1px); }
+
+/* Ensure large enough touch targets */
+button, a, input, select, textarea { min-height: 40px; }
+
+@media (pointer: coarse) {
+  button, a, input, select, textarea { min-height: 48px; font-size: 16px; }
+}
+

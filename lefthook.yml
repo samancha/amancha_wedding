@@ -1,0 +1,25 @@
+pre-commit:
+  parallel: true
+  commands:
+    prettier:
+      run: npm run prettier:check
+      include: 
+        - "**/*.{js,jsx,ts,tsx,json,css,md,html}"
+    lint:
+      run: npm run lint:staged
+      include: 
+        - "**/*.{js,jsx,ts,tsx}"
+
+commit-msg:
+  commands:
+    commitlint:
+      run: npx --no-install commitlint --edit "$1"
+      include:
+        - "**/*"
+
+pre-push:
+  commands:
+    test:
+      run: npm run test || true
+      include:
+        - "**/*"
