@@ -4,16 +4,42 @@ import React, { useEffect, useState } from 'react';
 type Theme = 'tahoe' | 'neo' | 'future';
 
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'tahoe';
-    return (localStorage.getItem('theme') as Theme) || 'tahoe';
-  });
+  // Initialize with 'tahoe' on both server and client to avoid hydration mismatch.
+  // After hydration, useEffect below will read from localStorage if available.
+  const [theme, setTheme] = useState<Theme>('tahoe');
+
+  // After hydration, read theme from localStorage (client-only).
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('theme') as Theme;
+      if (saved && ['tahoe', 'neo', 'future'].includes(saved)) {
+        setTheme(saved);
+      }
+    } catch (e) {
+      // In some environments (private browsing, strict policies) localStorage can throw.
+      // eslint-disable-next-line no-console
+      console.error('ThemeToggle: failed to read theme from localStorage', e);
+    }
+  }, []);
 
   useEffect(() => {
-    document.documentElement.classList.remove('theme-neo', 'theme-future');
-    if (theme === 'neo') document.documentElement.classList.add('theme-neo');
-    if (theme === 'future') document.documentElement.classList.add('theme-future');
-    localStorage.setItem('theme', theme);
+    try {
+      document.documentElement.classList.remove('theme-neo', 'theme-future');
+      if (theme === 'neo') document.documentElement.classList.add('theme-neo');
+      if (theme === 'future') document.documentElement.classList.add('theme-future');
+    } catch (e) {
+      // Defensive: DOM operations should not crash the app in unusual environments.
+      // eslint-disable-next-line no-console
+      console.error('ThemeToggle: failed to update document classes', e);
+    }
+
+    try {
+      localStorage.setItem('theme', theme);
+    } catch (e) {
+      // localStorage.setItem can throw under some policies; log and continue.
+      // eslint-disable-next-line no-console
+      console.error('ThemeToggle: failed to save theme to localStorage', e);
+    }
   }, [theme]);
 
   function cycle() {
