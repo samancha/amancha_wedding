@@ -41,7 +41,7 @@
     "lint-staged": "^16.2.7",
     "playwright": "^1.57.0",
     "prettier": "^3.7.4",
-    "prisma": "^6.19.1",
+    "prisma": "^7.1.0",
     "tailwindcss": "^4",
     "typescript": "^5",
     "zod": "^4.1.13"
