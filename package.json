@@ -12,7 +12,7 @@
     "test": "echo \"No tests configured.\""
   },
   "dependencies": {
-    "googleapis": "^142.0.0",
+    "googleapis": "^169.0.0",
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1",
