@@ -2,6 +2,7 @@
 import Image from "next/image";
 import React, { useState, useEffect } from 'react';
 import RsvpForm from '@/components/RsvpForm';
+import RsvpLookup from '@/components/RsvpLookup';
 import IntroBanner from '@/components/IntroBanner';
 
 export default function Home() {
@@ -234,10 +235,19 @@ export default function Home() {
 
       {/* RSVP Section */}
       <section id="rsvp" className="bg-white/10 backdrop-blur-sm py-16 px-6">
-        <div className="mx-auto max-w-2xl">
+        <div className="mx-auto max-w-6xl">
           <h2 className="text-2xl sm:text-4xl font-serif font-semibold text-white mb-2 text-center">RSVP</h2>
-          <p className="text-center text-white/80 mb-8">Please let us know if you can attend by submitting the form below.</p>
-          <RsvpForm />
+          <p className="text-center text-white/80 mb-8">Please let us know if you can attend by submitting the form below, or search for your name to check your status.</p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div>
+              <h3 className="text-xl font-serif font-semibold text-white mb-4">Submit Your RSVP</h3>
+              <RsvpForm compact={true} />
+            </div>
+            <div>
+              <h3 className="text-xl font-serif font-semibold text-white mb-4">Check Your Status</h3>
+              <RsvpLookup />
+            </div>
+          </div>
         </div>
       </section>
     </div>

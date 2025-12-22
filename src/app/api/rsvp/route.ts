@@ -4,6 +4,7 @@ import { z } from 'zod';
 const rsvpSchema = z.object({
   name: z.string().min(1),
   email: z.string().email(),
+  birthday: z.string().min(1),
   attending: z.enum(['yes', 'no']).optional(),
   guests: z.number().int().nonnegative().optional(),
   message: z.string().optional(),
@@ -15,30 +16,18 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = rsvpSchema.parse(body);
 
-    // For the POC: write to console, persist to DB, and send notification if configured.
     console.log('New RSVP received:', data);
 
+    // Save to Google Sheets
     try {
-      const { prisma } = await import('../../../../src/lib/prisma');
-      const dbData: any = { ...data, guests: data.guests ?? 0 };
-      if (data.visibility) dbData.visibility = data.visibility === 'public' ? 'PUBLIC' : 'PRIVATE';
-      const r = await prisma.rsvp.create({ data: dbData });
-      // do not expose db internals to the public response beyond confirmation
-      console.log('Persisted RSVP id:', r.id);
+      const { appendToGoogleSheet } = await import('../../../../src/lib/googleSheets');
+      await appendToGoogleSheet(data as any);
     } catch (err) {
-      console.error('DB persist error', err);
+      console.error('Google Sheets save error', err);
+      return NextResponse.json({ ok: false, error: 'Failed to save RSVP' }, { status: 500 });
     }
 
-    try {
-      const { sendRsvpNotification } = await import('../../../../src/lib/email');
-      // fire and forget - don't fail the endpoint if email fails
-      sendRsvpNotification(data as any).catch((err) => console.error('Email send failed', err));
-    } catch (err) {
-      console.error('Email module error', err);
-    }
-
-    const confirmTemplate = process.env.RSVP_CONFIRM_MESSAGE ?? 'Thanks! RSVP received.';
-    // simple token replacement
+    const confirmTemplate = process.env.RSVP_CONFIRM_MESSAGE ?? 'Thanks! RSVP received. Use your name and birthday to check your status anytime.';
     const message = confirmTemplate.replace('{name}', data.name ?? '').replace('{attending}', data.attending ?? '');
 
     return NextResponse.json({ ok: true, data, message }, { status: 201 });

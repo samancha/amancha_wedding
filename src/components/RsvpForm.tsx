@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 export default function RsvpForm({ compact }: { compact?: boolean }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [birthday, setBirthday] = useState('');
   const [attending, setAttending] = useState('yes');
   const [guests, setGuests] = useState(0);
   const [message, setMessage] = useState('');
@@ -18,7 +19,7 @@ export default function RsvpForm({ compact }: { compact?: boolean }) {
       const res = await fetch('/api/rsvp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, attending, guests, message, visibility }),
+        body: JSON.stringify({ name, email, birthday, attending, guests, message, visibility }),
       });
       if (res.ok) {
         const json = await res.json();
@@ -44,6 +45,24 @@ export default function RsvpForm({ compact }: { compact?: boolean }) {
         <label htmlFor="rsvp-email" className="block">
           <span className="block font-serif text-lg font-medium text-emerald-800 mb-2">Email</span>
           <input id="rsvp-email" name="email" type="email" required aria-required="true" className="w-full rounded-xl border-2 border-emerald-200 px-4 py-3 text-base focus:border-emerald-700 focus:ring-emerald-500 focus:outline-none transition" value={email} onChange={(e) => setEmail(e.target.value)} />
+        </label>
+      </div>
+
+      <div className="relative">
+        <label htmlFor="rsvp-birthday" className="block">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="block font-serif text-lg font-medium text-emerald-800">Birthday</span>
+            <div className="group relative cursor-help">
+              <svg className="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+              <div className="hidden group-hover:block absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-emerald-700 text-white text-sm rounded-lg whitespace-nowrap z-10">
+                Used to verify your RSVP status when you look it up
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-emerald-700" />
+              </div>
+            </div>
+          </div>
+          <input id="rsvp-birthday" name="birthday" type="date" required aria-required="true" className="w-full rounded-xl border-2 border-emerald-200 px-4 py-3 text-base focus:border-emerald-700 focus:ring-emerald-500 focus:outline-none transition" value={birthday} onChange={(e) => setBirthday(e.target.value)} />
         </label>
       </div>
 
