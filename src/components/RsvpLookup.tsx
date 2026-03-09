@@ -7,6 +7,7 @@ type RsvpStatus = {
   birthday: string;
   attending: string;
   guests: number;
+  maxGuests: number;
   message: string;
   visibility: string;
   timestamp: string;
@@ -17,6 +18,8 @@ export default function RsvpLookup() {
   const [birthday, setBirthday] = useState('');
   const [status, setStatus] = useState<'idle' | 'searching' | 'found' | 'notfound' | 'error'>('idle');
   const [result, setResult] = useState<RsvpStatus | null>(null);
+  const [updatingGuests, setUpdatingGuests] = useState(false);
+  const [guestCount, setGuestCount] = useState(0);
 
   async function search(e: React.FormEvent) {
     e.preventDefault();
@@ -30,6 +33,7 @@ export default function RsvpLookup() {
       const json = await res.json();
       if (res.ok && json.data) {
         setResult(json.data);
+        setGuestCount(json.data.guests || 0);
         setStatus('found');
       } else {
         setStatus('notfound');
@@ -37,6 +41,35 @@ export default function RsvpLookup() {
       }
     } catch (err) {
       setStatus('error');
+    }
+  }
+
+  async function updateGuests(e: React.FormEvent) {
+    e.preventDefault();
+    if (!result) return;
+    
+    setUpdatingGuests(true);
+    try {
+      const res = await fetch('/api/rsvp/update-guests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: result.name, 
+          birthday: result.birthday, 
+          guests: guestCount 
+        }),
+      });
+      
+      if (res.ok) {
+        setResult({ ...result, guests: guestCount });
+        alert('Guest count updated successfully!');
+      } else {
+        alert('Failed to update guest count. Please try again.');
+      }
+    } catch (err) {
+      alert('Error updating guest count. Please try again.');
+    } finally {
+      setUpdatingGuests(false);
     }
   }
 
@@ -51,7 +84,7 @@ export default function RsvpLookup() {
             id="lookup-name"
             type="text"
             required
-            className="w-full rounded-xl border-2 border-emerald-200 px-4 py-3 text-base focus:border-emerald-700 focus:ring-emerald-500 focus:outline-none transition"
+            className="w-full rounded-xl border-2 border-emerald-200 px-4 py-3 text-base text-emerald-900 focus:border-emerald-700 focus:ring-emerald-500 focus:outline-none transition"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -63,7 +96,7 @@ export default function RsvpLookup() {
             id="lookup-birthday"
             type="date"
             required
-            className="w-full rounded-xl border-2 border-emerald-200 px-4 py-3 text-base focus:border-emerald-700 focus:ring-emerald-500 focus:outline-none transition"
+            className="w-full rounded-xl border-2 border-emerald-200 px-4 py-3 text-base text-emerald-900 focus:border-emerald-700 focus:ring-emerald-500 focus:outline-none transition"
             value={birthday}
             onChange={(e) => setBirthday(e.target.value)}
           />
@@ -79,8 +112,8 @@ export default function RsvpLookup() {
       </form>
 
       {status === 'found' && result && (
-        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-900 font-medium mb-3">✓ Found your RSVP!</p>
+        <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg space-y-4">
+          <p className="text-green-900 font-medium">✓ Found your RSVP!</p>
           <dl className="space-y-2 text-sm text-green-800">
             <div className="flex justify-between">
               <dt className="font-medium">Name:</dt>
@@ -92,8 +125,8 @@ export default function RsvpLookup() {
             </div>
             {result.attending === 'yes' && (
               <div className="flex justify-between">
-                <dt className="font-medium">Guests:</dt>
-                <dd>{result.guests}</dd>
+                <dt className="font-medium">Guest Limit:</dt>
+                <dd>{result.maxGuests}</dd>
               </div>
             )}
             {result.message && (
@@ -103,6 +136,32 @@ export default function RsvpLookup() {
               </div>
             )}
           </dl>
+
+          {result.attending === 'yes' && (
+            <form onSubmit={updateGuests} className="pt-4 border-t border-green-200">
+              <label htmlFor="guest-count" className="block mb-3">
+                <span className="block font-serif font-medium text-green-900 mb-2">Update Guest Count</span>
+                <span className="text-sm text-green-700 mb-2 block">Maximum: {result.maxGuests} guests</span>
+                <input
+                  id="guest-count"
+                  type="number"
+                  min="0"
+                  max={result.maxGuests}
+                  required
+                  className="w-full rounded-lg border-2 border-green-300 px-3 py-2 text-base text-emerald-900 focus:border-green-500 focus:outline-none transition"
+                  value={guestCount}
+                  onChange={(e) => setGuestCount(Math.min(parseInt(e.target.value) || 0, result.maxGuests))}
+                />
+              </label>
+              <button
+                type="submit"
+                disabled={updatingGuests}
+                className="w-full rounded-lg bg-green-700 px-4 py-2 text-white text-sm font-medium hover:bg-green-800 transition disabled:opacity-50"
+              >
+                {updatingGuests ? 'Updating...' : 'Update Count'}
+              </button>
+            </form>
+          )}
         </div>
       )}
 

@@ -1,255 +1,650 @@
 "use client";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import React, { useState, useEffect } from 'react';
-import RsvpForm from '@/components/RsvpForm';
-import RsvpLookup from '@/components/RsvpLookup';
-import IntroBanner from '@/components/IntroBanner';
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+// Local image imports
+import heroImg from "@/img/O&S-38.jpg";
+import storyImg from "@/img/O&S-52.jpg";
+import break1Img from "@/img/O&S-49.jpg";
+import break2Img from "@/img/O&S-47.jpg";
+import break3Img from "@/img/O&S-59.jpg";
 
 export default function Home() {
+  const router = useRouter();
   const [headerVisible, setHeaderVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [teaserQuery, setTeaserQuery] = useState('');
+  const lastScrollY = useRef(0);
+  const heroImgRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY < lastScrollY) {
+      const y = window.scrollY;
+
+      // Parallax: drift image at 35% scroll speed
+      if (heroImgRef.current) {
+        heroImgRef.current.style.transform = `translateY(${y * 0.35}px)`;
+      }
+
+      // Nav hide / show
+      if (y < lastScrollY.current || y < 80) {
         setHeaderVisible(true);
-      } else if (currentScrollY > 100) {
+      } else if (y > 100) {
         setHeaderVisible(false);
       }
-      setLastScrollY(currentScrollY);
+      lastScrollY.current = y;
     };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
-
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setMobileMenuOpen(false);
-    }
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    setMobileMenuOpen(false);
   };
 
+  const navLinks = [
+    { label: "Our Story", id: "story" },
+    { label: "Hotel", id: "hotel" },
+    { label: "Travel", id: "travel" },
+    { label: "Things To Do", id: "things" },
+  ];
+
   return (
-    <div className="min-h-screen forest-bg font-sans">
-      {/* Tree silhouettes at bottom */}
-      <div className="fixed bottom-0 left-0 right-0 tree-silhouettes">
-        <svg viewBox="0 0 1200 150" preserveAspectRatio="none">
-          {/* Left trees */}
-          <polygon points="0,150 20,80 40,150" fill="rgba(0,0,0,0.3)"/>
-          <polygon points="30,150 50,60 70,150" fill="rgba(0,0,0,0.25)"/>
-          <polygon points="60,150 80,90 100,150" fill="rgba(0,0,0,0.2)"/>
-          
-          {/* Center-left trees */}
-          <polygon points="150,150 170,40 190,150" fill="rgba(0,0,0,0.28)"/>
-          <polygon points="180,150 210,70 240,150" fill="rgba(0,0,0,0.22)"/>
-          
-          {/* Center trees */}
-          <polygon points="350,150 380,30 410,150" fill="rgba(0,0,0,0.3)"/>
-          <polygon points="400,150 440,50 480,150" fill="rgba(0,0,0,0.24)"/>
-          <polygon points="450,150 480,65 510,150" fill="rgba(0,0,0,0.2)"/>
-          
-          {/* Center-right trees */}
-          <polygon points="650,150 680,35 710,150" fill="rgba(0,0,0,0.26)"/>
-          <polygon points="700,150 730,55 760,150" fill="rgba(0,0,0,0.3)"/>
-          
-          {/* Right trees */}
-          <polygon points="900,150 920,75 940,150" fill="rgba(0,0,0,0.22)"/>
-          <polygon points="950,150 980,50 1010,150" fill="rgba(0,0,0,0.28)"/>
-          <polygon points="1050,150 1080,80 1110,150" fill="rgba(0,0,0,0.25)"/>
-          <polygon points="1130,150 1150,90 1170,150" fill="rgba(0,0,0,0.2)"/>
-        </svg>
-      </div>
-      {/* Header Navigation */}
-      <header className={`sticky top-0 z-50 bg-emerald-700/80 backdrop-blur-md border-b border-emerald-800 shadow-sm transition-opacity duration-300 ${headerVisible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        <nav className="w-full px-6 py-3">
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center justify-center gap-8 text-sm h-10 text-white">
-            <button
-              onClick={() => scrollToSection('welcome')}
-              className="font-medium text-white/90 hover:text-white transition flex items-center h-full"
-            >
-              Home
-            </button>
-            <button
-              onClick={() => scrollToSection('details')}
-              className="font-medium text-white/90 hover:text-white transition flex items-center h-full"
-            >
-              Details
-            </button>
-            <button
-              onClick={() => scrollToSection('hotel')}
-              className="font-medium text-white/90 hover:text-white transition flex items-center h-full"
-            >
-              Hotel
-            </button>
-            <button
-              onClick={() => scrollToSection('travel')}
-              className="font-medium text-white/90 hover:text-white transition flex items-center h-full"
-            >
-              Travel
-            </button>
-            <button
-              onClick={() => scrollToSection('things')}
-              className="font-medium text-white/90 hover:text-white transition flex items-center h-full"
-            >
-              Things to Do
-            </button>
-            <button
-              onClick={() => scrollToSection('rsvp')}
-              className="font-medium text-white/90 hover:text-white transition flex items-center h-full"
+    <div
+      className="min-h-screen font-sans"
+      style={{ background: "var(--sand)", color: "var(--deep-brown)" }}
+    >
+      {/* ─── NAV ─────────────────────────────────────────────────────── */}
+      <header
+        style={{
+          background: "rgba(245,237,216,0.92)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderBottom: "1px solid rgba(201,148,58,0.2)",
+          transition: "opacity 300ms ease, transform 300ms ease",
+          opacity: headerVisible ? 1 : 0,
+          pointerEvents: headerVisible ? "auto" : "none",
+          transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
+        }}
+        className="sticky top-0 z-50"
+      >
+        <nav className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          {/* Wordmark */}
+          <span
+            className="text-xl tracking-widest uppercase"
+            style={{
+              fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+              color: "var(--deep-brown)",
+              letterSpacing: "0.15em",
+            }}
+          >
+            Olga &amp; Steve
+          </span>
+
+          {/* Desktop links */}
+          <div className="hidden lg:flex items-center gap-8">
+            {navLinks.map((l) => (
+              <button
+                key={l.id}
+                onClick={() => scrollTo(l.id)}
+                className="text-sm tracking-widest uppercase transition-opacity hover:opacity-60"
+                style={{ color: "var(--deep-brown)", letterSpacing: "0.12em" }}
+              >
+                {l.label}
+              </button>
+            ))}
+            <Link
+              href="/rsvp"
+              className="text-sm tracking-widest uppercase px-5 py-2 transition-opacity hover:opacity-80"
+              style={{
+                background: "var(--gold)",
+                color: "#fff",
+                letterSpacing: "0.12em",
+              }}
             >
               RSVP
-            </button>
+            </Link>
           </div>
 
-          {/* Mobile Hamburger Menu */}
-          <div className="lg:hidden flex items-center justify-between">
-            <span className="text-white font-serif text-lg">Menu</span>
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-white hover:text-white/80 transition"
-              aria-label="Toggle menu"
+          {/* Mobile hamburger */}
+          <button
+            className="lg:hidden p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              style={{ color: "var(--deep-brown)" }}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
-                  d={mobileMenuOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+                  strokeWidth={1.5}
+                  d="M6 18L18 6M6 6l12 12"
                 />
-              </svg>
-            </button>
-          </div>
-
-          {/* Mobile Menu Dropdown */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden absolute top-full left-0 right-0 bg-emerald-700 border-b border-emerald-800 shadow-lg animate-in fade-in slide-in-from-top-2 duration-200">
-              <div className="flex flex-col px-6 py-3 space-y-3 text-white">
-                <button
-                  onClick={() => scrollToSection('welcome')}
-                  className="text-left font-medium text-white/90 hover:text-white transition py-2"
-                >
-                  Home
-                </button>
-                <button
-                  onClick={() => scrollToSection('details')}
-                  className="text-left font-medium text-white/90 hover:text-white transition py-2"
-                >
-                  Details
-                </button>
-                <button
-                  onClick={() => scrollToSection('hotel')}
-                  className="text-left font-medium text-white/90 hover:text-white transition py-2"
-                >
-                  Hotel
-                </button>
-                <button
-                  onClick={() => scrollToSection('travel')}
-                  className="text-left font-medium text-white/90 hover:text-white transition py-2"
-                >
-                  Travel
-                </button>
-                <button
-                  onClick={() => scrollToSection('things')}
-                  className="text-left font-medium text-white/90 hover:text-white transition py-2"
-                >
-                  Things to Do
-                </button>
-                <button
-                  onClick={() => scrollToSection('rsvp')}
-                  className="text-left font-medium text-white/90 hover:text-white transition py-2 border-t border-emerald-600 pt-3"
-                >
-                  RSVP
-                </button>
-              </div>
-            </div>
-          )}
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
         </nav>
+
+        {/* Mobile dropdown */}
+        {mobileMenuOpen && (
+          <div
+            className="lg:hidden border-t"
+            style={{
+              borderColor: "rgba(201,148,58,0.2)",
+              background: "rgba(245,237,216,0.97)",
+            }}
+          >
+            <div className="flex flex-col px-6 py-4 gap-4">
+              {navLinks.map((l) => (
+                <button
+                  key={l.id}
+                  onClick={() => scrollTo(l.id)}
+                  className="text-sm tracking-widest uppercase text-left transition-opacity hover:opacity-60"
+                  style={{ color: "var(--deep-brown)", letterSpacing: "0.12em" }}
+                >
+                  {l.label}
+                </button>
+              ))}
+              <Link
+                href="/rsvp"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-sm tracking-widest uppercase text-center py-3 mt-1 transition-opacity hover:opacity-80"
+                style={{ background: "var(--gold)", color: "#fff" }}
+              >
+                RSVP
+              </Link>
+            </div>
+          </div>
+        )}
       </header>
 
-      {/* Hero Banner */}
-      <section id="details">
-      <IntroBanner date="October 17, 2026" location="Windmill Winery, Florence, Arizona" dress="Formal" pickup="Parking should not be a concern — there is ample parking available at the venue. We recommend using the complimentary shuttle from the hotel for convenience, but your own vehicle is welcome." />
+      {/* ─── HERO ────────────────────────────────────────────────────── */}
+      <section className="relative w-full" style={{ height: "100svh", minHeight: 600, overflow: "hidden" }}>
+        {/* Parallax image wrapper — oversized so the image has room to drift */}
+        <div
+          ref={heroImgRef}
+          style={{ position: "absolute", inset: "-20% 0", willChange: "transform" }}
+        >
+          <Image
+            src={heroImg}
+            alt="Olga and Steve"
+            fill
+            priority
+            style={{ objectFit: "cover", objectPosition: "center 30%" }}
+            sizes="100vw"
+          />
+        </div>
+        {/* Dark overlay */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(44,26,14,0.55) 100%)" }}
+        />
+        {/* Hero text — centered */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
+          <p
+            className="text-sm uppercase tracking-widest mb-4 opacity-80"
+            style={{ letterSpacing: "0.25em" }}
+          >
+            You are invited to celebrate the wedding of
+          </p>
+          <h1
+            className="text-5xl sm:text-7xl mb-4"
+            style={{
+              fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+              fontWeight: 400,
+              lineHeight: 1.1,
+            }}
+          >
+            Olga &amp;{" "}
+            <span style={{ fontStyle: "italic" }}>Steve</span>
+          </h1>
+          <p
+            className="text-base sm:text-lg uppercase tracking-widest mb-8 opacity-80"
+            style={{ letterSpacing: "0.2em" }}
+          >
+            October 17th 2026 · Florence, Arizona
+          </p>
+          <Link
+            href="/rsvp"
+            className="text-sm uppercase tracking-widest px-8 py-3 transition-opacity hover:opacity-80"
+            style={{
+              background: "var(--gold)",
+              color: "#fff",
+              letterSpacing: "0.2em",
+            }}
+          >
+            RSVP
+          </Link>
+        </div>
       </section>
 
-      {/* Welcome Section */}
-      <section id="welcome" className="bg-white/10 backdrop-blur-sm py-16 px-6">
-        <main className="mx-auto max-w-4xl py-8 px-6 space-y-8">
-          <div className="glass-card p-8 relative overflow-hidden neo-hero bg-white/95">
-            <div className="relative z-10 text-center">
-              <h2 className="text-3xl sm:text-5xl font-serif font-semibold text-emerald-900 mb-4">Welcome</h2>
-              <p className="text-lg text-slate-600 max-w-2xl">We're excited to share our day with you. Please join us for a celebration of love and commitment.</p>
-            </div>
+      {/* ─── OUR STORY ───────────────────────────────────────────────── */}
+      <section
+        id="story"
+        className="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
+      >
+        {/* Photo */}
+        <div className="relative w-full overflow-hidden" style={{ aspectRatio: "3/4" }}>
+          <Image
+            src={storyImg}
+            alt="Our story"
+            fill
+            style={{ objectFit: "cover", objectPosition: "center" }}
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
+        </div>
+
+        {/* Text */}
+        <div>
+          <p
+            className="text-xs uppercase tracking-widest mb-4"
+            style={{ color: "var(--gold)", letterSpacing: "0.25em" }}
+          >
+            Our Story
+          </p>
+          <h2
+            className="text-4xl sm:text-5xl mb-6"
+            style={{
+              fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+              fontWeight: 400,
+              lineHeight: 1.15,
+              color: "var(--deep-brown)",
+            }}
+          >
+            How We Found
+            <br />
+            <span style={{ fontStyle: "italic" }}>Each Other</span>
+          </h2>
+          <div
+            className="space-y-4 text-base leading-relaxed"
+            style={{ color: "rgba(44,26,14,0.75)", fontFamily: "var(--font-lora, 'Lora', serif)" }}
+          >
+            <p>
+              Placeholder — we met on a beautiful desert evening, surrounded by the same warmth 
+              you feel in these photos. From the very first conversation, it was clear something 
+              special had begun.
+            </p>
+            <p>
+              Over the years we explored the Arizona landscape together, hiked trails at golden 
+              hour, and slowly built a life side by side. The engagement came naturally — a quiet 
+              moment that said everything the words didn't need to.
+            </p>
+            <p>
+              Now we're ready to celebrate with everyone who made us who we are, in the place we 
+              love most, surrounded by the people we love most.
+            </p>
           </div>
 
-          {/* Hotel & Travel Side by Side */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Hotel Accommodations Card */}
-            <div id="hotel" className="glass-card p-8 bg-emerald-50 border border-emerald-100">
-              <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-emerald-900 mb-4 text-center">Accommodations</h3>
-              <p className="text-slate-600 mb-4">We recommend the <a href="https://greentreeinn.com/destinations/florence/" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-800 underline">GreenTree Inn & Suites</a>, just minutes from the venue, where we've secured group rates. A complimentary shuttle will transport guests to and from the wedding. Airbnbs and other local rentals are also available if you prefer alternative accommodations.</p>
-              <ul className="list-disc pl-5 space-y-2 text-slate-700">
-                <li><a href="https://greentreeinn.com/destinations/florence/" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-800 underline">GreenTree Inn & Suites</a> — ~5 minutes to venue, complimentary shuttle</li>
-                <li>Airbnb and local vacation rentals available</li>
-                <li>Contact us for group rate details</li>
-              </ul>
-              <div className="mt-4 pt-4 border-t border-emerald-200">
-                <a href="https://www.google.com/maps/dir/GreenTree+Inn+Suites+Florence+Arizona/Windmill+Winery+Florence+Arizona" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-medium transition">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6.553 3.276A1 1 0 0117 20.618V9.382a1 1 0 00-1.447-.894L9 11m6-11l5.447-2.724A1 1 0 0121 3.618v10.764a1 1 0 01-1.447.894L15 13" />
-                  </svg>
-                  View in Google Maps
-                </a>
-              </div>
-            </div>
-
-            {/* Airports & Travel Card */}
-            <div id="travel" className="glass-card p-8 bg-white/95">
-              <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-emerald-900 mb-4 text-center">Airports & Travel</h3>
-              <p className="text-slate-600 mb-4">Florence, Arizona is served by two nearby airports. Most guests fly into Phoenix Sky Harbor International Airport (PHX), about 1 hour from the hotel. Alternatively, Mesa Gateway Airport (AZA) is closer, about 45 minutes away. Note that rideshare services don't come by often at night, so we recommend arranging ground transportation in advance.</p>
-              <ul className="list-disc pl-5 space-y-2 text-slate-700">
-                <li><a href="https://www.skyharbor.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-800 underline">Phoenix Sky Harbor International (PHX)</a> — ~1 hour to hotel</li>
-                <li><a href="https://www.mesagatewayairport.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-800 underline">Mesa Gateway Airport (AZA)</a> — ~45 minutes to hotel</li>
-                <li>Rental car services available at both airports</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Things to Do Card */}
-          <div id="things" className="glass-card p-8 bg-white/95">
-            <h3 className="text-2xl sm:text-3xl font-serif font-semibold text-emerald-900 mb-4 text-center">Things to Do</h3>
-            <p className="text-slate-600 mb-4">If you're extending your trip to explore Arizona, we recommend:</p>
-            <ul className="list-disc pl-5 space-y-2 text-slate-700">
-              <li><a href="https://www.thewindmillwinery.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:text-emerald-800 underline">Windmill Winery</a> — our wedding venue, wonderful for post-event visits</li>
-              <li>Arizona Desert Botanical Garden (Phoenix) — 45 minutes away</li>
-              <li>Apache Trail Scenic Drive — historic mining route with panoramic views</li>
-              <li>Salt River (Tubing) — seasonal adventure activity</li>
-            </ul>
-          </div>
-        </main>
+          {/* Gold divider */}
+          <div
+            className="mt-10 w-16 h-px"
+            style={{ background: "var(--gold)" }}
+          />
+          <p
+            className="mt-4 text-xs uppercase tracking-widest"
+            style={{ color: "var(--gold)", letterSpacing: "0.2em" }}
+          >
+            October 17th 2026
+          </p>
+        </div>
       </section>
 
-      {/* RSVP Section */}
-      <section id="rsvp" className="bg-white/10 backdrop-blur-sm py-16 px-6">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="text-2xl sm:text-4xl font-serif font-semibold text-white mb-2 text-center">RSVP</h2>
-          <p className="text-center text-white/80 mb-8">Please let us know if you can attend by submitting the form below, or search for your name to check your status.</p>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div>
-              <h3 className="text-xl font-serif font-semibold text-white mb-4">Submit Your RSVP</h3>
-              <RsvpForm compact={true} />
-            </div>
-            <div>
-              <h3 className="text-xl font-serif font-semibold text-white mb-4">Check Your Status</h3>
-              <RsvpLookup />
-            </div>
+      {/* ─── PHOTO BREAK 1 ───────────────────────────────────────────── */}
+      <div
+        className="w-full relative"
+        style={{ height: "60vh", minHeight: 360 }}
+      >
+        <Image
+          src={break1Img}
+          alt=""
+          fill
+          style={{ objectFit: "cover", objectPosition: "center 40%" }}
+          sizes="100vw"
+        />
+      </div>
+
+      {/* ─── ACCOMMODATIONS ──────────────────────────────────────────── */}
+      <section
+        id="hotel"
+        className="max-w-4xl mx-auto px-6 py-24"
+      >
+        <p
+          className="text-xs uppercase tracking-widest mb-4"
+          style={{ color: "var(--gold)", letterSpacing: "0.25em" }}
+        >
+          Accommodations
+        </p>
+        <h2
+          className="text-4xl sm:text-5xl mb-10"
+          style={{
+            fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+            fontWeight: 400,
+            lineHeight: 1.15,
+            color: "var(--deep-brown)",
+          }}
+        >
+          Where to Stay
+        </h2>
+
+        {/* Divider */}
+        <div className="w-12 h-px mb-10" style={{ background: "var(--gold)" }} />
+
+        <div
+          className="space-y-6 text-base leading-relaxed"
+          style={{ color: "rgba(44,26,14,0.75)", fontFamily: "var(--font-lora, 'Lora', serif)" }}
+        >
+          <div>
+            <h3
+              className="text-xl mb-2"
+              style={{
+                fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                color: "var(--deep-brown)",
+                fontWeight: 600,
+              }}
+            >
+              GreenTree Inn &amp; Suites
+            </h3>
+            <p>
+              We have a room block reserved at the GreenTree Inn &amp; Suites in Florence, AZ at a 
+              discounted group rate. Please mention the wedding when booking to receive the rate.
+            </p>
+          </div>
+          <div>
+            <h3
+              className="text-xl mb-2"
+              style={{
+                fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                color: "var(--deep-brown)",
+                fontWeight: 600,
+              }}
+            >
+              Shuttle Service
+            </h3>
+            <p>
+              A complimentary shuttle will run between the hotel and the venue throughout the 
+              evening. No need to worry about a designated driver — we've got you covered.
+            </p>
+          </div>
+          <div>
+            <a
+              href="https://maps.google.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block text-sm uppercase tracking-widest transition-opacity hover:opacity-70 mt-2"
+              style={{ color: "var(--gold)", letterSpacing: "0.15em", borderBottom: "1px solid var(--gold)", paddingBottom: 2 }}
+            >
+              Get Directions →
+            </a>
           </div>
         </div>
       </section>
+
+      {/* ─── PHOTO BREAK 2 ───────────────────────────────────────────── */}
+      <div className="w-full relative" style={{ height: "60vh", minHeight: 360 }}>
+        <Image
+          src={break2Img}
+          alt=""
+          fill
+          style={{ objectFit: "cover", objectPosition: "center 25%" }}
+          sizes="100vw"
+        />
+      </div>
+
+      {/* ─── TRAVEL ──────────────────────────────────────────────────── */}
+      <section id="travel" className="max-w-4xl mx-auto px-6 py-24">
+        <p
+          className="text-xs uppercase tracking-widest mb-4"
+          style={{ color: "var(--gold)", letterSpacing: "0.25em" }}
+        >
+          Getting Here
+        </p>
+        <h2
+          className="text-4xl sm:text-5xl mb-10"
+          style={{
+            fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+            fontWeight: 400,
+            lineHeight: 1.15,
+            color: "var(--deep-brown)",
+          }}
+        >
+          Travel
+        </h2>
+
+        <div className="w-12 h-px mb-10" style={{ background: "var(--gold)" }} />
+
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-10 text-base leading-relaxed"
+          style={{ color: "rgba(44,26,14,0.75)", fontFamily: "var(--font-lora, 'Lora', serif)" }}
+        >
+          <div>
+            <h3
+              className="text-xl mb-2"
+              style={{
+                fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                color: "var(--deep-brown)",
+                fontWeight: 600,
+              }}
+            >
+              PHX Sky Harbor
+            </h3>
+            <p>
+              Phoenix Sky Harbor International Airport is approximately 1 hour from the venue. 
+              It's the largest and most convenient option with direct flights from most major cities.
+            </p>
+          </div>
+          <div>
+            <h3
+              className="text-xl mb-2"
+              style={{
+                fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                color: "var(--deep-brown)",
+                fontWeight: 600,
+              }}
+            >
+              AZA / Mesa Gateway
+            </h3>
+            <p>
+              Mesa Gateway Airport is approximately 45 minutes away and services several 
+              budget-friendly carriers including Allegiant. A great option if you're flying in 
+              from a regional hub.
+            </p>
+          </div>
+          <div>
+            <h3
+              className="text-xl mb-2"
+              style={{
+                fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                color: "var(--deep-brown)",
+                fontWeight: 600,
+              }}
+            >
+              Rental Cars &amp; Rideshare
+            </h3>
+            <p>
+              Rental cars are available at both airports. Rideshare (Uber / Lyft) availability 
+              is limited in Florence — we recommend arranging transport in advance or renting 
+              a car for the weekend.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── PHOTO BREAK 3 ───────────────────────────────────────────── */}
+      <div className="w-full relative" style={{ height: "60vh", minHeight: 360 }}>
+        <Image
+          src={break3Img}
+          alt=""
+          fill
+          style={{ objectFit: "cover", objectPosition: "center 50%" }}
+          sizes="100vw"
+        />
+      </div>
+
+      {/* ─── THINGS TO DO ────────────────────────────────────────────── */}
+      <section id="things" className="max-w-4xl mx-auto px-6 py-24">
+        <p
+          className="text-xs uppercase tracking-widest mb-4"
+          style={{ color: "var(--gold)", letterSpacing: "0.25em" }}
+        >
+          Explore
+        </p>
+        <h2
+          className="text-4xl sm:text-5xl mb-10"
+          style={{
+            fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+            fontWeight: 400,
+            lineHeight: 1.15,
+            color: "var(--deep-brown)",
+          }}
+        >
+          Things To Do
+        </h2>
+
+        <div className="w-12 h-px mb-10" style={{ background: "var(--gold)" }} />
+
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10 text-base leading-relaxed"
+          style={{ color: "rgba(44,26,14,0.75)", fontFamily: "var(--font-lora, 'Lora', serif)" }}
+        >
+          {[
+            {
+              name: "Windmill Winery",
+              desc: "A charming winery in Florence offering tastings and picturesque vineyard views. A perfect stop for wine lovers looking to relax before or after the festivities.",
+            },
+            {
+              name: "Desert Botanical Garden",
+              desc: "Located in Phoenix, the Desert Botanical Garden showcases over 50,000 plants from the world's deserts. Stunning at any time of year.",
+            },
+            {
+              name: "Apache Trail",
+              desc: "A scenic drive through the Superstition Mountains offering dramatic desert vistas, historic sites, and access to Roosevelt Lake.",
+            },
+            {
+              name: "Salt River Tubing",
+              desc: "Float down the Salt River in an inner tube — a beloved Arizona tradition. A fun way to cool off and enjoy the desert landscape.",
+            },
+          ].map((item) => (
+            <div key={item.name}>
+              <h3
+                className="text-xl mb-2"
+                style={{
+                  fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                  color: "var(--deep-brown)",
+                  fontWeight: 600,
+                }}
+              >
+                {item.name}
+              </h3>
+              <p>{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── RSVP TEASER ─────────────────────────────────────────────── */}
+      <section
+        id="rsvp"
+        className="w-full py-32 px-6 text-center text-white"
+        style={{ background: "var(--deep-brown)" }}
+      >
+        <p
+          className="text-xs uppercase tracking-widest mb-4 opacity-60"
+          style={{ letterSpacing: "0.3em" }}
+        >
+          We Hope to See You There
+        </p>
+        <h2
+          className="text-4xl sm:text-5xl mb-4"
+          style={{
+            fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+            fontWeight: 400,
+            lineHeight: 1.15,
+          }}
+        >
+          Olga &amp;{" "}
+          <span style={{ fontStyle: "italic" }}>Steve</span>
+        </h2>
+        <p className="text-base mb-12 opacity-70" style={{ fontFamily: "var(--font-lora, 'Lora', serif)" }}>
+          Please let us know if you&apos;ll be joining us on October 17th, 2026.
+        </p>
+
+        {/* Last-name teaser — routes to full RSVP page */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!teaserQuery.trim()) return;
+            router.push('/rsvp?q=' + encodeURIComponent(teaserQuery.trim()));
+          }}
+          className="mt-4 max-w-sm mx-auto flex flex-col items-center gap-4"
+        >
+          <input
+            type="text"
+            value={teaserQuery}
+            onChange={(e) => setTeaserQuery(e.target.value)}
+            placeholder="Enter your last name"
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              fontSize: '1rem',
+              border: '1px solid rgba(201,148,58,0.4)',
+              background: 'rgba(255,255,255,0.07)',
+              color: 'white',
+              outline: 'none',
+              fontFamily: "var(--font-lora, 'Lora', serif)",
+              textAlign: 'center',
+              letterSpacing: '0.05em',
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              padding: '13px 36px',
+              background: 'var(--gold)',
+              color: 'white',
+              fontSize: '0.72rem',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: "var(--font-lora, 'Lora', serif)",
+              transition: 'opacity 150ms ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.8')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
+          >
+            Find My Invitation
+          </button>
+        </form>
+      </section>
+
+      {/* ─── FOOTER ──────────────────────────────────────────────────── */}
+      <footer
+        className="w-full py-10 text-center text-xs uppercase tracking-widest"
+        style={{
+          background: "var(--deep-brown)",
+          borderTop: "1px solid rgba(255,255,255,0.06)",
+          color: "rgba(255,255,255,0.35)",
+          letterSpacing: "0.2em",
+        }}
+      >
+        Olga &amp; Steve · October 17th 2026
+      </footer>
     </div>
   );
 }

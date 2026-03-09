@@ -12,6 +12,13 @@
   --tahoe-glass: rgba(255,255,255,0.7);
   --accent: var(--tahoe-lake);
   --accent-2: #0ea5a4; /* subtle secondary */
+
+  /* Desert / Dario-inspired palette */
+  --sand: #F5EDD8;
+  --gold: #C9943A;
+  --gold-light: #E8B85A;
+  --deep-brown: #2C1A0E;
+  --dusty-sage: #6B7F5E;
 }
 
 /* Neo 2025 theme overrides */
