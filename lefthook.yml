@@ -2,12 +2,13 @@ pre-commit:
   parallel: true
   commands:
     prettier:
-      run: npm run prettier:check
-      include: 
+      run: npm run prettier:write
+      stage_fixed: true
+      include:
         - "**/*.{js,jsx,ts,tsx,json,css,md,html}"
     lint:
-      run: npm run lint:staged
-      include: 
+      run: npm run lint
+      include:
         - "**/*.{js,jsx,ts,tsx}"
 
 commit-msg:
@@ -19,6 +20,10 @@ commit-msg:
 
 pre-push:
   commands:
+    typecheck:
+      run: npm run typecheck
+      include:
+        - "**/*.{ts,tsx}"
     test:
       run: npm run test || true
       include:

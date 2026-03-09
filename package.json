@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint --ext .ts,.tsx,.js,.jsx src",
+    "typecheck": "tsc --noEmit",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
     "test": "echo \"No tests configured.\""
@@ -28,6 +29,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
     "eslint-plugin-security": "^3.0.1",
+    "lefthook": "^2.1.3",
     "prettier": "^3.7.4",
     "tailwindcss": "^4",
     "typescript": "^5"
