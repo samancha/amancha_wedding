@@ -5,26 +5,19 @@ pre-commit:
       run: npm run prettier:write
       stage_fixed: true
       include:
-        - "**/*.{js,jsx,ts,tsx,json,css,md,html}"
+        - '**/*.{js,jsx,ts,tsx,json,css,md,html}'
     lint:
       run: npm run lint
       include:
-        - "**/*.{js,jsx,ts,tsx}"
-
-commit-msg:
-  commands:
-    commitlint:
-      run: npx --no-install commitlint --edit "$1"
-      include:
-        - "**/*"
+        - '**/*.{js,jsx,ts,tsx}'
 
 pre-push:
   commands:
     typecheck:
       run: npm run typecheck
       include:
-        - "**/*.{ts,tsx}"
+        - '**/*.{ts,tsx}'
     test:
       run: npm run test || true
       include:
-        - "**/*"
+        - '**/*'

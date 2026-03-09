@@ -1,25 +1,29 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import { defineConfig, globalIgnores } from 'eslint/config';
+import nextVitals from 'eslint-config-next/core-web-vitals';
+import nextTs from 'eslint-config-next/typescript';
+import pluginSecurity from 'eslint-plugin-security';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   // Add security plugin checks
   {
-    plugins: ["security"],
+    plugins: { security: pluginSecurity },
     rules: {
-      // some common recommended rules from eslint-plugin-security
-      "security/detect-object-injection": "warn",
+      'security/detect-object-injection': 'warn',
     },
   },
   // Override default ignores of eslint-config-next.
   globalIgnores([
-    // Default ignores of eslint-config-next:
-    ".next/**",
-    "out/**",
-    "build/**",
-    "next-env.d.ts",
+    '.next/**',
+    'out/**',
+    'build/**',
+    'dist/**',
+    'coverage/**',
+    'public/**',
+    'node_modules/**',
+    '*.lock',
+    'next-env.d.ts',
   ]),
 ]);
 

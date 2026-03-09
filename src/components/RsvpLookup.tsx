@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState } from 'react';
 
 type RsvpStatus = {
@@ -16,7 +16,9 @@ type RsvpStatus = {
 export default function RsvpLookup() {
   const [name, setName] = useState('');
   const [birthday, setBirthday] = useState('');
-  const [status, setStatus] = useState<'idle' | 'searching' | 'found' | 'notfound' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'searching' | 'found' | 'notfound' | 'error'>(
+    'idle'
+  );
   const [result, setResult] = useState<RsvpStatus | null>(null);
   const [updatingGuests, setUpdatingGuests] = useState(false);
   const [guestCount, setGuestCount] = useState(0);
@@ -47,19 +49,19 @@ export default function RsvpLookup() {
   async function updateGuests(e: React.FormEvent) {
     e.preventDefault();
     if (!result) return;
-    
+
     setUpdatingGuests(true);
     try {
       const res = await fetch('/api/rsvp/update-guests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: result.name, 
-          birthday: result.birthday, 
-          guests: guestCount 
+        body: JSON.stringify({
+          name: result.name,
+          birthday: result.birthday,
+          guests: guestCount,
         }),
       });
-      
+
       if (res.ok) {
         setResult({ ...result, guests: guestCount });
         alert('Guest count updated successfully!');
@@ -75,8 +77,10 @@ export default function RsvpLookup() {
 
   return (
     <div className="p-8 glass-card rounded-2xl backdrop-blur-md bg-white/95 max-w-md">
-      <h3 className="text-2xl font-serif font-semibold text-emerald-900 mb-4 text-center">Check Your RSVP Status</h3>
-      
+      <h3 className="text-2xl font-serif font-semibold text-emerald-900 mb-4 text-center">
+        Check Your RSVP Status
+      </h3>
+
       <form onSubmit={search} className="space-y-4" aria-live="polite">
         <label htmlFor="lookup-name" className="block">
           <span className="block font-serif text-lg font-medium text-emerald-800 mb-2">Name</span>
@@ -91,7 +95,9 @@ export default function RsvpLookup() {
         </label>
 
         <label htmlFor="lookup-birthday" className="block">
-          <span className="block font-serif text-lg font-medium text-emerald-800 mb-2">Birthday</span>
+          <span className="block font-serif text-lg font-medium text-emerald-800 mb-2">
+            Birthday
+          </span>
           <input
             id="lookup-birthday"
             type="date"
@@ -121,7 +127,13 @@ export default function RsvpLookup() {
             </div>
             <div className="flex justify-between">
               <dt className="font-medium">Attending:</dt>
-              <dd className="capitalize">{result.attending === 'yes' ? '✓ Yes' : result.attending === 'no' ? '✗ No' : 'Undecided'}</dd>
+              <dd className="capitalize">
+                {result.attending === 'yes'
+                  ? '✓ Yes'
+                  : result.attending === 'no'
+                    ? '✗ No'
+                    : 'Undecided'}
+              </dd>
             </div>
             {result.attending === 'yes' && (
               <div className="flex justify-between">
@@ -140,8 +152,12 @@ export default function RsvpLookup() {
           {result.attending === 'yes' && (
             <form onSubmit={updateGuests} className="pt-4 border-t border-green-200">
               <label htmlFor="guest-count" className="block mb-3">
-                <span className="block font-serif font-medium text-green-900 mb-2">Update Guest Count</span>
-                <span className="text-sm text-green-700 mb-2 block">Maximum: {result.maxGuests} guests</span>
+                <span className="block font-serif font-medium text-green-900 mb-2">
+                  Update Guest Count
+                </span>
+                <span className="text-sm text-green-700 mb-2 block">
+                  Maximum: {result.maxGuests} guests
+                </span>
                 <input
                   id="guest-count"
                   type="number"
@@ -150,7 +166,9 @@ export default function RsvpLookup() {
                   required
                   className="w-full rounded-lg border-2 border-green-300 px-3 py-2 text-base text-emerald-900 focus:border-green-500 focus:outline-none transition"
                   value={guestCount}
-                  onChange={(e) => setGuestCount(Math.min(parseInt(e.target.value) || 0, result.maxGuests))}
+                  onChange={(e) =>
+                    setGuestCount(Math.min(parseInt(e.target.value) || 0, result.maxGuests))
+                  }
                 />
               </label>
               <button
@@ -168,7 +186,9 @@ export default function RsvpLookup() {
       {status === 'notfound' && (
         <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-yellow-900 font-medium">No RSVP found with that name and birthday.</p>
-          <p className="text-yellow-800 text-sm mt-2">Please check the spelling and try again, or submit your RSVP above.</p>
+          <p className="text-yellow-800 text-sm mt-2">
+            Please check the spelling and try again, or submit your RSVP above.
+          </p>
         </div>
       )}
 

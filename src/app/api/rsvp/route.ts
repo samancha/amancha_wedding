@@ -7,21 +7,25 @@ const rsvpSchema = z.object({
   attending: z.enum(['yes', 'no']).optional(),
   meal: z.string().optional(),
   allergies: z.string().optional(),
-  additionalGuests: z.array(z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    meal: z.string().optional(),
-    allergies: z.string().optional(),
-  })).optional(),
+  additionalGuests: z
+    .array(
+      z.object({
+        firstName: z.string(),
+        lastName: z.string(),
+        meal: z.string().optional(),
+        allergies: z.string().optional(),
+      })
+    )
+    .optional(),
 });
 
 export async function POST(request: Request) {
   try {
     console.log('=== RSVP POST Request ===');
-    
+
     const body = await request.json();
     console.log('Request body:', JSON.stringify(body, null, 2));
-    
+
     const data = rsvpSchema.parse(body);
     console.log('Validation passed:', JSON.stringify(data, null, 2));
 
@@ -30,14 +34,17 @@ export async function POST(request: Request) {
       console.log('Importing googleSheets module...');
       const { appendToGoogleSheet } = await import('../../../../src/lib/googleSheets');
       console.log('Calling appendToGoogleSheet with:', JSON.stringify(data, null, 2));
-      await appendToGoogleSheet(data as any);
+      await appendToGoogleSheet(data);
       console.log('RSVP successfully saved to Google Sheets');
     } catch (err) {
       console.error('Google Sheets save error:', err);
       const errorMsg = err instanceof Error ? err.message : String(err);
       console.error('Error details:', errorMsg);
       console.error('Full error object:', JSON.stringify(err, null, 2));
-      return NextResponse.json({ ok: false, error: 'Failed to save RSVP: ' + errorMsg }, { status: 500 });
+      return NextResponse.json(
+        { ok: false, error: 'Failed to save RSVP: ' + errorMsg },
+        { status: 500 }
+      );
     }
 
     const message = `Thanks, ${data.name}! Your RSVP has been received.`;

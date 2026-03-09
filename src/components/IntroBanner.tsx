@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 
@@ -78,7 +78,8 @@ export default function IntroBanner({
             <div className="mt-8 pt-6 border-t border-emerald-100">
               <p className="text-sm text-slate-600">
                 <span className="block text-emerald-700 font-medium mb-2">Ready to RSVP?</span>
-                Click the <span className="font-semibold text-emerald-800">RSVP</span> button in the header above to confirm your attendance.
+                Click the <span className="font-semibold text-emerald-800">RSVP</span> button in the
+                header above to confirm your attendance.
               </p>
             </div>
           </div>

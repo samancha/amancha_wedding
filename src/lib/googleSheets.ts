@@ -6,7 +6,7 @@ const sheets = google.sheets('v4');
 function getAuthClient() {
   console.log('getAuthClient: Initializing...');
   console.log('GOOGLE_SHEETS_CREDENTIALS env var exists:', !!process.env.GOOGLE_SHEETS_CREDENTIALS);
-  
+
   const credentials = process.env.GOOGLE_SHEETS_CREDENTIALS
     ? JSON.parse(Buffer.from(process.env.GOOGLE_SHEETS_CREDENTIALS, 'base64').toString())
     : null;
@@ -21,16 +21,26 @@ function getAuthClient() {
     credentials,
     scopes: ['https://www.googleapis.com/auth/spreadsheets'],
   });
-  
+
   console.log('GoogleAuth client created successfully');
   return auth;
 }
 
 const GUEST_LIST_SHEET_ID = process.env.GOOGLE_GUEST_LIST_SHEET_ID!;
 
-export type GuestMatch = { firstName: string; lastName: string; fullName: string; guestCount: number };
+export type GuestMatch = {
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  guestCount: number;
+};
 
-type AdditionalGuestData = { firstName: string; lastName: string; meal?: string; allergies?: string };
+type AdditionalGuestData = {
+  firstName: string;
+  lastName: string;
+  meal?: string;
+  allergies?: string;
+};
 
 type RsvpData = {
   name: string;
@@ -47,9 +57,7 @@ type RsvpData = {
  * names (e.g. "Garcia-Lopez") are found whether the guest types
  * "Garcia", "Lopez", or the full compound name.
  */
-export async function verifyGuestLastName(
-  lastName: string
-): Promise<{ matches: GuestMatch[] }> {
+export async function verifyGuestLastName(lastName: string): Promise<{ matches: GuestMatch[] }> {
   try {
     const auth = getAuthClient();
 
@@ -78,7 +86,9 @@ export async function verifyGuestLastName(
     const dataRows = rows.slice(1);
     const matched: GuestMatch[] = dataRows
       .filter((row) => {
-        const cell = String(row[lastNameCol] || '').toLowerCase().trim();
+        const cell = String(row[lastNameCol] || '')
+          .toLowerCase()
+          .trim();
         return cell.length > 0 && (cell.includes(normalized) || normalized.includes(cell));
       })
       .map((row) => {
@@ -103,10 +113,10 @@ export async function verifyGuestLastName(
 export async function appendToGoogleSheet(rsvp: RsvpData) {
   try {
     console.log('appendToGoogleSheet called with:', rsvp);
-    
+
     const auth = getAuthClient();
     console.log('Auth client obtained');
-    
+
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
     console.log('Spreadsheet ID:', spreadsheetId);
 
@@ -118,10 +128,10 @@ export async function appendToGoogleSheet(rsvp: RsvpData) {
     const values: string[][] = [
       [
         timestamp,
-        rsvp.name,            // B: Full Name
-        rsvp.lastName,        // C: Last Name
+        rsvp.name, // B: Full Name
+        rsvp.lastName, // C: Last Name
         rsvp.attending || '', // D: Attending
-        rsvp.meal || '',      // E: Meal
+        rsvp.meal || '', // E: Meal
         rsvp.allergies || '', // F: Dietary Restrictions
       ],
       ...(rsvp.additionalGuests || []).map((g) => [
@@ -204,7 +214,11 @@ export async function searchGoogleSheet(name: string, birthday: string) {
   }
 }
 
-export async function updateGuestCountInGoogleSheet(name: string, birthday: string, guests: number) {
+export async function updateGuestCountInGoogleSheet(
+  name: string,
+  birthday: string,
+  guests: number
+) {
   try {
     const auth = getAuthClient();
     const spreadsheetId = process.env.GOOGLE_SHEETS_ID;
@@ -222,7 +236,7 @@ export async function updateGuestCountInGoogleSheet(name: string, birthday: stri
 
     const rows = response.data.values || [];
     const headerRow = rows[0];
-    
+
     // Find the matching row
     let matchingRowIndex = -1;
     for (let i = 1; i < rows.length; i++) {

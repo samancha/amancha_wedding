@@ -1,14 +1,23 @@
 /* eslint-disable no-console */
 
-const requiredLocal = ["NEXT_PUBLIC_VERCEL_URL"];
-const requiredCI = ["VERCEL_TOKEN", "VERCEL_ORG_ID", "VERCEL_PROJECT_ID"];
+const requiredLocal = ['NEXT_PUBLIC_VERCEL_URL'];
+const requiredCI = ['VERCEL_TOKEN', 'VERCEL_ORG_ID', 'VERCEL_PROJECT_ID'];
 
-const optionalEmail = ["SENDGRID_API_KEY", "SENDGRID_FROM", "SENDGRID_TO", "SMTP_HOST", "SMTP_USER", "SMTP_PASS", "SMTP_FROM", "SMTP_TO"];
+const optionalEmail = [
+  'SENDGRID_API_KEY',
+  'SENDGRID_FROM',
+  'SENDGRID_TO',
+  'SMTP_HOST',
+  'SMTP_USER',
+  'SMTP_PASS',
+  'SMTP_FROM',
+  'SMTP_TO',
+];
 
 function check(vars) {
   const missing = vars.filter((v) => !process.env[v]);
   if (missing.length) {
-    console.error("Missing environment variables:", missing.join(", "));
+    console.error('Missing environment variables:', missing.join(', '));
     return false;
   }
   return true;

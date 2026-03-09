@@ -8,16 +8,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { lastName } = schema.parse(body);
 
-    const { verifyGuestLastName } = await import(
-      '../../../../../src/lib/googleSheets'
-    );
+    const { verifyGuestLastName } = await import('../../../../../src/lib/googleSheets');
     const { matches } = await verifyGuestLastName(lastName);
     return NextResponse.json({ matches });
   } catch (err) {
     console.error('verify-guest error:', err);
-    return NextResponse.json(
-      { found: false, error: (err as Error).message },
-      { status: 400 }
-    );
+    return NextResponse.json({ found: false, error: (err as Error).message }, { status: 400 });
   }
 }

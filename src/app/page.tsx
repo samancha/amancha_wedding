@@ -1,15 +1,15 @@
-"use client";
-import React, { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+'use client';
+import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 // Local image imports
-import heroImg from "@/img/O&S-38.jpg";
-import storyImg from "@/img/O&S-52.jpg";
-import break1Img from "@/img/O&S-49.jpg";
-import break2Img from "@/img/O&S-47.jpg";
-import break3Img from "@/img/O&S-59.jpg";
+import heroImg from '@/img/O&S-38.jpg';
+import storyImg from '@/img/O&S-52.jpg';
+import break1Img from '@/img/O&S-49.jpg';
+import break2Img from '@/img/O&S-47.jpg';
+import break3Img from '@/img/O&S-59.jpg';
 
 export default function Home() {
   const router = useRouter();
@@ -36,38 +36,38 @@ export default function Home() {
       }
       lastScrollY.current = y;
     };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setMobileMenuOpen(false);
   };
 
   const navLinks = [
-    { label: "Our Story", id: "story" },
-    { label: "Hotel", id: "hotel" },
-    { label: "Travel", id: "travel" },
-    { label: "Things To Do", id: "things" },
+    { label: 'Our Story', id: 'story' },
+    { label: 'Hotel', id: 'hotel' },
+    { label: 'Travel', id: 'travel' },
+    { label: 'Things To Do', id: 'things' },
   ];
 
   return (
     <div
       className="min-h-screen font-sans"
-      style={{ background: "var(--sand)", color: "var(--deep-brown)" }}
+      style={{ background: 'var(--sand)', color: 'var(--deep-brown)' }}
     >
       {/* ─── NAV ─────────────────────────────────────────────────────── */}
       <header
         style={{
-          background: "rgba(245,237,216,0.92)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          borderBottom: "1px solid rgba(201,148,58,0.2)",
-          transition: "opacity 300ms ease, transform 300ms ease",
+          background: 'rgba(245,237,216,0.92)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderBottom: '1px solid rgba(201,148,58,0.2)',
+          transition: 'opacity 300ms ease, transform 300ms ease',
           opacity: headerVisible ? 1 : 0,
-          pointerEvents: headerVisible ? "auto" : "none",
-          transform: headerVisible ? "translateY(0)" : "translateY(-100%)",
+          pointerEvents: headerVisible ? 'auto' : 'none',
+          transform: headerVisible ? 'translateY(0)' : 'translateY(-100%)',
         }}
         className="sticky top-0 z-50"
       >
@@ -77,8 +77,8 @@ export default function Home() {
             className="text-xl tracking-widest uppercase"
             style={{
               fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
-              color: "var(--deep-brown)",
-              letterSpacing: "0.15em",
+              color: 'var(--deep-brown)',
+              letterSpacing: '0.15em',
             }}
           >
             Olga &amp; Steve
@@ -91,7 +91,7 @@ export default function Home() {
                 key={l.id}
                 onClick={() => scrollTo(l.id)}
                 className="text-sm tracking-widest uppercase transition-opacity hover:opacity-60"
-                style={{ color: "var(--deep-brown)", letterSpacing: "0.12em" }}
+                style={{ color: 'var(--deep-brown)', letterSpacing: '0.12em' }}
               >
                 {l.label}
               </button>
@@ -100,9 +100,9 @@ export default function Home() {
               href="/rsvp"
               className="text-sm tracking-widest uppercase px-5 py-2 transition-opacity hover:opacity-80"
               style={{
-                background: "var(--gold)",
-                color: "#fff",
-                letterSpacing: "0.12em",
+                background: 'var(--gold)',
+                color: '#fff',
+                letterSpacing: '0.12em',
               }}
             >
               RSVP
@@ -120,7 +120,7 @@ export default function Home() {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              style={{ color: "var(--deep-brown)" }}
+              style={{ color: 'var(--deep-brown)' }}
             >
               {mobileMenuOpen ? (
                 <path
@@ -146,8 +146,8 @@ export default function Home() {
           <div
             className="lg:hidden border-t"
             style={{
-              borderColor: "rgba(201,148,58,0.2)",
-              background: "rgba(245,237,216,0.97)",
+              borderColor: 'rgba(201,148,58,0.2)',
+              background: 'rgba(245,237,216,0.97)',
             }}
           >
             <div className="flex flex-col px-6 py-4 gap-4">
@@ -156,7 +156,7 @@ export default function Home() {
                   key={l.id}
                   onClick={() => scrollTo(l.id)}
                   className="text-sm tracking-widest uppercase text-left transition-opacity hover:opacity-60"
-                  style={{ color: "var(--deep-brown)", letterSpacing: "0.12em" }}
+                  style={{ color: 'var(--deep-brown)', letterSpacing: '0.12em' }}
                 >
                   {l.label}
                 </button>
@@ -165,7 +165,7 @@ export default function Home() {
                 href="/rsvp"
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-sm tracking-widest uppercase text-center py-3 mt-1 transition-opacity hover:opacity-80"
-                style={{ background: "var(--gold)", color: "#fff" }}
+                style={{ background: 'var(--gold)', color: '#fff' }}
               >
                 RSVP
               </Link>
@@ -175,31 +175,36 @@ export default function Home() {
       </header>
 
       {/* ─── HERO ────────────────────────────────────────────────────── */}
-      <section className="relative w-full" style={{ height: "100svh", minHeight: 600, overflow: "hidden" }}>
+      <section
+        className="relative w-full"
+        style={{ height: '100svh', minHeight: 600, overflow: 'hidden' }}
+      >
         {/* Parallax image wrapper — oversized so the image has room to drift */}
         <div
           ref={heroImgRef}
-          style={{ position: "absolute", inset: "-20% 0", willChange: "transform" }}
+          style={{ position: 'absolute', inset: '-20% 0', willChange: 'transform' }}
         >
           <Image
             src={heroImg}
             alt="Olga and Steve"
             fill
             priority
-            style={{ objectFit: "cover", objectPosition: "center 30%" }}
+            style={{ objectFit: 'cover', objectPosition: 'center 30%' }}
             sizes="100vw"
           />
         </div>
         {/* Dark overlay */}
         <div
           className="absolute inset-0"
-          style={{ background: "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(44,26,14,0.55) 100%)" }}
+          style={{
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, rgba(44,26,14,0.55) 100%)',
+          }}
         />
         {/* Hero text — centered */}
         <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-white">
           <p
             className="text-sm uppercase tracking-widest mb-4 opacity-80"
-            style={{ letterSpacing: "0.25em" }}
+            style={{ letterSpacing: '0.25em' }}
           >
             You are invited to celebrate the wedding of
           </p>
@@ -211,12 +216,11 @@ export default function Home() {
               lineHeight: 1.1,
             }}
           >
-            Olga &amp;{" "}
-            <span style={{ fontStyle: "italic" }}>Steve</span>
+            Olga &amp; <span style={{ fontStyle: 'italic' }}>Steve</span>
           </h1>
           <p
             className="text-base sm:text-lg uppercase tracking-widest mb-8 opacity-80"
-            style={{ letterSpacing: "0.2em" }}
+            style={{ letterSpacing: '0.2em' }}
           >
             October 17th 2026 · Florence, Arizona
           </p>
@@ -224,9 +228,9 @@ export default function Home() {
             href="/rsvp"
             className="text-sm uppercase tracking-widest px-8 py-3 transition-opacity hover:opacity-80"
             style={{
-              background: "var(--gold)",
-              color: "#fff",
-              letterSpacing: "0.2em",
+              background: 'var(--gold)',
+              color: '#fff',
+              letterSpacing: '0.2em',
             }}
           >
             RSVP
@@ -240,12 +244,12 @@ export default function Home() {
         className="max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center"
       >
         {/* Photo */}
-        <div className="relative w-full overflow-hidden" style={{ aspectRatio: "3/4" }}>
+        <div className="relative w-full overflow-hidden" style={{ aspectRatio: '3/4' }}>
           <Image
             src={storyImg}
             alt="Our story"
             fill
-            style={{ objectFit: "cover", objectPosition: "center" }}
+            style={{ objectFit: 'cover', objectPosition: 'center' }}
             sizes="(max-width: 1024px) 100vw, 50vw"
           />
         </div>
@@ -254,7 +258,7 @@ export default function Home() {
         <div>
           <p
             className="text-xs uppercase tracking-widest mb-4"
-            style={{ color: "var(--gold)", letterSpacing: "0.25em" }}
+            style={{ color: 'var(--gold)', letterSpacing: '0.25em' }}
           >
             Our Story
           </p>
@@ -264,41 +268,38 @@ export default function Home() {
               fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
               fontWeight: 400,
               lineHeight: 1.15,
-              color: "var(--deep-brown)",
+              color: 'var(--deep-brown)',
             }}
           >
             How We Found
             <br />
-            <span style={{ fontStyle: "italic" }}>Each Other</span>
+            <span style={{ fontStyle: 'italic' }}>Each Other</span>
           </h2>
           <div
             className="space-y-4 text-base leading-relaxed"
-            style={{ color: "rgba(44,26,14,0.75)", fontFamily: "var(--font-lora, 'Lora', serif)" }}
+            style={{ color: 'rgba(44,26,14,0.75)', fontFamily: "var(--font-lora, 'Lora', serif)" }}
           >
             <p>
-              Placeholder — we met on a beautiful desert evening, surrounded by the same warmth 
-              you feel in these photos. From the very first conversation, it was clear something 
-              special had begun.
+              Placeholder — we met on a beautiful desert evening, surrounded by the same warmth you
+              feel in these photos. From the very first conversation, it was clear something special
+              had begun.
             </p>
             <p>
-              Over the years we explored the Arizona landscape together, hiked trails at golden 
-              hour, and slowly built a life side by side. The engagement came naturally — a quiet 
-              moment that said everything the words didn't need to.
+              Over the years we explored the Arizona landscape together, hiked trails at golden
+              hour, and slowly built a life side by side. The engagement came naturally — a quiet
+              moment that said everything the words didn&apos;t need to.
             </p>
             <p>
-              Now we're ready to celebrate with everyone who made us who we are, in the place we 
-              love most, surrounded by the people we love most.
+              Now we&apos;re ready to celebrate with everyone who made us who we are, in the place
+              we love most, surrounded by the people we love most.
             </p>
           </div>
 
           {/* Gold divider */}
-          <div
-            className="mt-10 w-16 h-px"
-            style={{ background: "var(--gold)" }}
-          />
+          <div className="mt-10 w-16 h-px" style={{ background: 'var(--gold)' }} />
           <p
             className="mt-4 text-xs uppercase tracking-widest"
-            style={{ color: "var(--gold)", letterSpacing: "0.2em" }}
+            style={{ color: 'var(--gold)', letterSpacing: '0.2em' }}
           >
             October 17th 2026
           </p>
@@ -306,27 +307,21 @@ export default function Home() {
       </section>
 
       {/* ─── PHOTO BREAK 1 ───────────────────────────────────────────── */}
-      <div
-        className="w-full relative"
-        style={{ height: "60vh", minHeight: 360 }}
-      >
+      <div className="w-full relative" style={{ height: '60vh', minHeight: 360 }}>
         <Image
           src={break1Img}
           alt=""
           fill
-          style={{ objectFit: "cover", objectPosition: "center 40%" }}
+          style={{ objectFit: 'cover', objectPosition: 'center 40%' }}
           sizes="100vw"
         />
       </div>
 
       {/* ─── ACCOMMODATIONS ──────────────────────────────────────────── */}
-      <section
-        id="hotel"
-        className="max-w-4xl mx-auto px-6 py-24"
-      >
+      <section id="hotel" className="max-w-4xl mx-auto px-6 py-24">
         <p
           className="text-xs uppercase tracking-widest mb-4"
-          style={{ color: "var(--gold)", letterSpacing: "0.25em" }}
+          style={{ color: 'var(--gold)', letterSpacing: '0.25em' }}
         >
           Accommodations
         </p>
@@ -336,32 +331,32 @@ export default function Home() {
             fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
             fontWeight: 400,
             lineHeight: 1.15,
-            color: "var(--deep-brown)",
+            color: 'var(--deep-brown)',
           }}
         >
           Where to Stay
         </h2>
 
         {/* Divider */}
-        <div className="w-12 h-px mb-10" style={{ background: "var(--gold)" }} />
+        <div className="w-12 h-px mb-10" style={{ background: 'var(--gold)' }} />
 
         <div
           className="space-y-6 text-base leading-relaxed"
-          style={{ color: "rgba(44,26,14,0.75)", fontFamily: "var(--font-lora, 'Lora', serif)" }}
+          style={{ color: 'rgba(44,26,14,0.75)', fontFamily: "var(--font-lora, 'Lora', serif)" }}
         >
           <div>
             <h3
               className="text-xl mb-2"
               style={{
                 fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
-                color: "var(--deep-brown)",
+                color: 'var(--deep-brown)',
                 fontWeight: 600,
               }}
             >
               GreenTree Inn &amp; Suites
             </h3>
             <p>
-              We have a room block reserved at the GreenTree Inn &amp; Suites in Florence, AZ at a 
+              We have a room block reserved at the GreenTree Inn &amp; Suites in Florence, AZ at a
               discounted group rate. Please mention the wedding when booking to receive the rate.
             </p>
           </div>
@@ -370,15 +365,15 @@ export default function Home() {
               className="text-xl mb-2"
               style={{
                 fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
-                color: "var(--deep-brown)",
+                color: 'var(--deep-brown)',
                 fontWeight: 600,
               }}
             >
               Shuttle Service
             </h3>
             <p>
-              A complimentary shuttle will run between the hotel and the venue throughout the 
-              evening. No need to worry about a designated driver — we've got you covered.
+              A complimentary shuttle will run between the hotel and the venue throughout the
+              evening. No need to worry about a designated driver — we&apos;ve got you covered.
             </p>
           </div>
           <div>
@@ -387,7 +382,12 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block text-sm uppercase tracking-widest transition-opacity hover:opacity-70 mt-2"
-              style={{ color: "var(--gold)", letterSpacing: "0.15em", borderBottom: "1px solid var(--gold)", paddingBottom: 2 }}
+              style={{
+                color: 'var(--gold)',
+                letterSpacing: '0.15em',
+                borderBottom: '1px solid var(--gold)',
+                paddingBottom: 2,
+              }}
             >
               Get Directions →
             </a>
@@ -396,12 +396,12 @@ export default function Home() {
       </section>
 
       {/* ─── PHOTO BREAK 2 ───────────────────────────────────────────── */}
-      <div className="w-full relative" style={{ height: "60vh", minHeight: 360 }}>
+      <div className="w-full relative" style={{ height: '60vh', minHeight: 360 }}>
         <Image
           src={break2Img}
           alt=""
           fill
-          style={{ objectFit: "cover", objectPosition: "center 25%" }}
+          style={{ objectFit: 'cover', objectPosition: 'center 25%' }}
           sizes="100vw"
         />
       </div>
@@ -410,7 +410,7 @@ export default function Home() {
       <section id="travel" className="max-w-4xl mx-auto px-6 py-24">
         <p
           className="text-xs uppercase tracking-widest mb-4"
-          style={{ color: "var(--gold)", letterSpacing: "0.25em" }}
+          style={{ color: 'var(--gold)', letterSpacing: '0.25em' }}
         >
           Getting Here
         </p>
@@ -420,32 +420,33 @@ export default function Home() {
             fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
             fontWeight: 400,
             lineHeight: 1.15,
-            color: "var(--deep-brown)",
+            color: 'var(--deep-brown)',
           }}
         >
           Travel
         </h2>
 
-        <div className="w-12 h-px mb-10" style={{ background: "var(--gold)" }} />
+        <div className="w-12 h-px mb-10" style={{ background: 'var(--gold)' }} />
 
         <div
           className="grid grid-cols-1 sm:grid-cols-2 gap-10 text-base leading-relaxed"
-          style={{ color: "rgba(44,26,14,0.75)", fontFamily: "var(--font-lora, 'Lora', serif)" }}
+          style={{ color: 'rgba(44,26,14,0.75)', fontFamily: "var(--font-lora, 'Lora', serif)" }}
         >
           <div>
             <h3
               className="text-xl mb-2"
               style={{
                 fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
-                color: "var(--deep-brown)",
+                color: 'var(--deep-brown)',
                 fontWeight: 600,
               }}
             >
               PHX Sky Harbor
             </h3>
             <p>
-              Phoenix Sky Harbor International Airport is approximately 1 hour from the venue. 
-              It's the largest and most convenient option with direct flights from most major cities.
+              Phoenix Sky Harbor International Airport is approximately 1 hour from the venue.
+              It&apos;s the largest and most convenient option with direct flights from most major
+              cities.
             </p>
           </div>
           <div>
@@ -453,15 +454,15 @@ export default function Home() {
               className="text-xl mb-2"
               style={{
                 fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
-                color: "var(--deep-brown)",
+                color: 'var(--deep-brown)',
                 fontWeight: 600,
               }}
             >
               AZA / Mesa Gateway
             </h3>
             <p>
-              Mesa Gateway Airport is approximately 45 minutes away and services several 
-              budget-friendly carriers including Allegiant. A great option if you're flying in 
+              Mesa Gateway Airport is approximately 45 minutes away and services several
+              budget-friendly carriers including Allegiant. A great option if you&apos;re flying in
               from a regional hub.
             </p>
           </div>
@@ -470,28 +471,28 @@ export default function Home() {
               className="text-xl mb-2"
               style={{
                 fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
-                color: "var(--deep-brown)",
+                color: 'var(--deep-brown)',
                 fontWeight: 600,
               }}
             >
               Rental Cars &amp; Rideshare
             </h3>
             <p>
-              Rental cars are available at both airports. Rideshare (Uber / Lyft) availability 
-              is limited in Florence — we recommend arranging transport in advance or renting 
-              a car for the weekend.
+              Rental cars are available at both airports. Rideshare (Uber / Lyft) availability is
+              limited in Florence — we recommend arranging transport in advance or renting a car for
+              the weekend.
             </p>
           </div>
         </div>
       </section>
 
       {/* ─── PHOTO BREAK 3 ───────────────────────────────────────────── */}
-      <div className="w-full relative" style={{ height: "60vh", minHeight: 360 }}>
+      <div className="w-full relative" style={{ height: '60vh', minHeight: 360 }}>
         <Image
           src={break3Img}
           alt=""
           fill
-          style={{ objectFit: "cover", objectPosition: "center 50%" }}
+          style={{ objectFit: 'cover', objectPosition: 'center 50%' }}
           sizes="100vw"
         />
       </div>
@@ -500,7 +501,7 @@ export default function Home() {
       <section id="things" className="max-w-4xl mx-auto px-6 py-24">
         <p
           className="text-xs uppercase tracking-widest mb-4"
-          style={{ color: "var(--gold)", letterSpacing: "0.25em" }}
+          style={{ color: 'var(--gold)', letterSpacing: '0.25em' }}
         >
           Explore
         </p>
@@ -510,34 +511,34 @@ export default function Home() {
             fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
             fontWeight: 400,
             lineHeight: 1.15,
-            color: "var(--deep-brown)",
+            color: 'var(--deep-brown)',
           }}
         >
           Things To Do
         </h2>
 
-        <div className="w-12 h-px mb-10" style={{ background: "var(--gold)" }} />
+        <div className="w-12 h-px mb-10" style={{ background: 'var(--gold)' }} />
 
         <div
           className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-10 text-base leading-relaxed"
-          style={{ color: "rgba(44,26,14,0.75)", fontFamily: "var(--font-lora, 'Lora', serif)" }}
+          style={{ color: 'rgba(44,26,14,0.75)', fontFamily: "var(--font-lora, 'Lora', serif)" }}
         >
           {[
             {
-              name: "Windmill Winery",
-              desc: "A charming winery in Florence offering tastings and picturesque vineyard views. A perfect stop for wine lovers looking to relax before or after the festivities.",
+              name: 'Windmill Winery',
+              desc: 'A charming winery in Florence offering tastings and picturesque vineyard views. A perfect stop for wine lovers looking to relax before or after the festivities.',
             },
             {
-              name: "Desert Botanical Garden",
+              name: 'Desert Botanical Garden',
               desc: "Located in Phoenix, the Desert Botanical Garden showcases over 50,000 plants from the world's deserts. Stunning at any time of year.",
             },
             {
-              name: "Apache Trail",
-              desc: "A scenic drive through the Superstition Mountains offering dramatic desert vistas, historic sites, and access to Roosevelt Lake.",
+              name: 'Apache Trail',
+              desc: 'A scenic drive through the Superstition Mountains offering dramatic desert vistas, historic sites, and access to Roosevelt Lake.',
             },
             {
-              name: "Salt River Tubing",
-              desc: "Float down the Salt River in an inner tube — a beloved Arizona tradition. A fun way to cool off and enjoy the desert landscape.",
+              name: 'Salt River Tubing',
+              desc: 'Float down the Salt River in an inner tube — a beloved Arizona tradition. A fun way to cool off and enjoy the desert landscape.',
             },
           ].map((item) => (
             <div key={item.name}>
@@ -545,7 +546,7 @@ export default function Home() {
                 className="text-xl mb-2"
                 style={{
                   fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
-                  color: "var(--deep-brown)",
+                  color: 'var(--deep-brown)',
                   fontWeight: 600,
                 }}
               >
@@ -561,11 +562,11 @@ export default function Home() {
       <section
         id="rsvp"
         className="w-full py-32 px-6 text-center text-white"
-        style={{ background: "var(--deep-brown)" }}
+        style={{ background: 'var(--deep-brown)' }}
       >
         <p
           className="text-xs uppercase tracking-widest mb-4 opacity-60"
-          style={{ letterSpacing: "0.3em" }}
+          style={{ letterSpacing: '0.3em' }}
         >
           We Hope to See You There
         </p>
@@ -577,10 +578,12 @@ export default function Home() {
             lineHeight: 1.15,
           }}
         >
-          Olga &amp;{" "}
-          <span style={{ fontStyle: "italic" }}>Steve</span>
+          Olga &amp; <span style={{ fontStyle: 'italic' }}>Steve</span>
         </h2>
-        <p className="text-base mb-12 opacity-70" style={{ fontFamily: "var(--font-lora, 'Lora', serif)" }}>
+        <p
+          className="text-base mb-12 opacity-70"
+          style={{ fontFamily: "var(--font-lora, 'Lora', serif)" }}
+        >
           Please let us know if you&apos;ll be joining us on October 17th, 2026.
         </p>
 
@@ -637,10 +640,10 @@ export default function Home() {
       <footer
         className="w-full py-10 text-center text-xs uppercase tracking-widest"
         style={{
-          background: "var(--deep-brown)",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-          color: "rgba(255,255,255,0.35)",
-          letterSpacing: "0.2em",
+          background: 'var(--deep-brown)',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          color: 'rgba(255,255,255,0.35)',
+          letterSpacing: '0.2em',
         }}
       >
         Olga &amp; Steve · October 17th 2026

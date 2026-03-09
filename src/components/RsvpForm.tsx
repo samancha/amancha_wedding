@@ -1,10 +1,15 @@
-"use client";
+'use client';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 type Step = 'search' | 'attending' | 'guests' | 'meal' | 'sent';
 type GuestMatch = { firstName: string; lastName: string; fullName: string; guestCount: number };
-type AdditionalGuest = { firstName: string; lastName: string; meal: string | null; allergies: string };
+type AdditionalGuest = {
+  firstName: string;
+  lastName: string;
+  meal: string | null;
+  allergies: string;
+};
 
 const MEALS = [
   {
@@ -47,10 +52,20 @@ const labelStyle: React.CSSProperties = {
 };
 
 function Divider() {
-  return <div style={{ width: '100%', height: 1, background: 'rgba(201,148,58,0.18)', margin: '4px 0' }} />;
+  return (
+    <div
+      style={{ width: '100%', height: 1, background: 'rgba(201,148,58,0.18)', margin: '4px 0' }}
+    />
+  );
 }
 
-export default function RsvpForm({ compact, initialLastName }: { compact?: boolean; initialLastName?: string }) {
+export default function RsvpForm({
+  compact,
+  initialLastName,
+}: {
+  compact?: boolean;
+  initialLastName?: string;
+}) {
   const spacing = compact ? 'space-y-5' : 'space-y-7';
 
   // Step 1
@@ -96,7 +111,7 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
         setMatches(json.matches);
       } else {
         setSearchError(
-          "No guests found with that last name. Please double-check or contact us directly."
+          'No guests found with that last name. Please double-check or contact us directly.'
         );
       }
     } catch {
@@ -276,9 +291,7 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
                       border: isSelected
                         ? '1px solid var(--gold, #C9943A)'
                         : '1px solid rgba(201,148,58,0.22)',
-                      background: isSelected
-                        ? 'rgba(201,148,58,0.10)'
-                        : 'rgba(255,255,255,0.03)',
+                      background: isSelected ? 'rgba(201,148,58,0.10)' : 'rgba(255,255,255,0.03)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
@@ -342,7 +355,14 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
     return (
       <div className={spacing}>
         {/* Breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: 12,
+          }}
+        >
           <div>
             <p style={{ ...labelStyle, marginBottom: 4 }}>Responding as</p>
             <p
@@ -357,7 +377,10 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
           </div>
           <button
             type="button"
-            onClick={() => { setStep('search'); setAttending(null); }}
+            onClick={() => {
+              setStep('search');
+              setAttending(null);
+            }}
             style={{
               background: 'none',
               border: 'none',
@@ -394,9 +417,7 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
                     border: selected
                       ? '1px solid var(--gold, #C9943A)'
                       : '1px solid rgba(201,148,58,0.22)',
-                    background: selected
-                      ? 'rgba(201,148,58,0.10)'
-                      : 'rgba(255,255,255,0.03)',
+                    background: selected ? 'rgba(201,148,58,0.10)' : 'rgba(255,255,255,0.03)',
                     cursor: 'pointer',
                     transition: 'all 150ms ease',
                   }}
@@ -489,7 +510,14 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
     const allNamed = additionalGuests.every((g) => g.firstName.trim() && g.lastName.trim());
     return (
       <div className={spacing}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: 12,
+          }}
+        >
           <div>
             <p style={{ ...labelStyle, marginBottom: 4 }}>Responding as</p>
             <p
@@ -504,8 +532,22 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
           </div>
           <button
             type="button"
-            onClick={() => { setStep('attending'); setAdditionalGuests([]); }}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.7rem', letterSpacing: '0.15em', textTransform: 'uppercase', opacity: 0.45, color: 'inherit', paddingTop: 4, flexShrink: 0 }}
+            onClick={() => {
+              setStep('attending');
+              setAdditionalGuests([]);
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.7rem',
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              opacity: 0.45,
+              color: 'inherit',
+              paddingTop: 4,
+              flexShrink: 0,
+            }}
           >
             ← Back
           </button>
@@ -532,7 +574,9 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
                 <p style={{ ...labelStyle, marginBottom: 10 }}>Guest {idx + 1}</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div>
-                    <label htmlFor={`guest-fn-${idx}`} style={labelStyle}>First name</label>
+                    <label htmlFor={`guest-fn-${idx}`} style={labelStyle}>
+                      First name
+                    </label>
                     <input
                       id={`guest-fn-${idx}`}
                       type="text"
@@ -544,7 +588,9 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
                     />
                   </div>
                   <div>
-                    <label htmlFor={`guest-ln-${idx}`} style={labelStyle}>Last name</label>
+                    <label htmlFor={`guest-ln-${idx}`} style={labelStyle}>
+                      Last name
+                    </label>
                     <input
                       id={`guest-ln-${idx}`}
                       type="text"
@@ -589,7 +635,14 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
     return (
       <div className={spacing}>
         {/* Breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: 12,
+          }}
+        >
           <div>
             <p style={{ ...labelStyle, marginBottom: 4 }}>Responding as</p>
             <p
@@ -659,9 +712,7 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
                     border: selected
                       ? '1px solid var(--gold, #C9943A)'
                       : '1px solid rgba(201,148,58,0.25)',
-                    background: selected
-                      ? 'var(--gold, #C9943A)'
-                      : 'rgba(255,255,255,0.03)',
+                    background: selected ? 'var(--gold, #C9943A)' : 'rgba(255,255,255,0.03)',
                     cursor: 'pointer',
                     transition: 'all 180ms ease',
                   }}
@@ -695,10 +746,7 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
 
         {/* Allergies */}
         <div>
-          <label
-            htmlFor="rsvp-allergies"
-            style={{ ...labelStyle, marginBottom: 6 }}
-          >
+          <label htmlFor="rsvp-allergies" style={{ ...labelStyle, marginBottom: 6 }}>
             Dietary restrictions or allergies
           </label>
           <p
@@ -754,7 +802,9 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
                     style={{
                       padding: '20px 16px',
                       textAlign: 'left',
-                      border: selected ? '1px solid var(--gold, #C9943A)' : '1px solid rgba(201,148,58,0.25)',
+                      border: selected
+                        ? '1px solid var(--gold, #C9943A)'
+                        : '1px solid rgba(201,148,58,0.25)',
                       background: selected ? 'var(--gold, #C9943A)' : 'rgba(255,255,255,0.03)',
                       cursor: 'pointer',
                       transition: 'all 180ms ease',
@@ -809,7 +859,9 @@ export default function RsvpForm({ compact, initialLastName }: { compact?: boole
           style={{
             width: '100%',
             background:
-              submitting || !allMealsSelected ? 'rgba(44,26,14,0.25)' : 'var(--deep-brown, #2C1A0E)',
+              submitting || !allMealsSelected
+                ? 'rgba(44,26,14,0.25)'
+                : 'var(--deep-brown, #2C1A0E)',
             color: '#fff',
             border: 'none',
             padding: '15px',

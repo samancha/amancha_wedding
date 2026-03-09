@@ -1,26 +1,20 @@
-"use client";
+'use client';
 import React, { useEffect, useState } from 'react';
 
 type Theme = 'tahoe' | 'neo' | 'future';
 
 export default function ThemeToggle() {
-  // Initialize with 'tahoe' on both server and client to avoid hydration mismatch.
-  // After hydration, useEffect below will read from localStorage if available.
-  const [theme, setTheme] = useState<Theme>('tahoe');
-
-  // After hydration, read theme from localStorage (client-only).
-  useEffect(() => {
+  // Lazy initializer reads localStorage once on mount — safe in 'use client' components.
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'tahoe';
     try {
       const saved = localStorage.getItem('theme') as Theme;
-      if (saved && ['tahoe', 'neo', 'future'].includes(saved)) {
-        setTheme(saved);
-      }
-    } catch (e) {
-      // In some environments (private browsing, strict policies) localStorage can throw.
-      // eslint-disable-next-line no-console
-      console.error('ThemeToggle: failed to read theme from localStorage', e);
+      if (saved && ['tahoe', 'neo', 'future'].includes(saved)) return saved;
+    } catch {
+      // localStorage unavailable (private browsing, strict policies)
     }
-  }, []);
+    return 'tahoe';
+  });
 
   useEffect(() => {
     try {
@@ -29,7 +23,6 @@ export default function ThemeToggle() {
       if (theme === 'future') document.documentElement.classList.add('theme-future');
     } catch (e) {
       // Defensive: DOM operations should not crash the app in unusual environments.
-      // eslint-disable-next-line no-console
       console.error('ThemeToggle: failed to update document classes', e);
     }
 
@@ -37,7 +30,6 @@ export default function ThemeToggle() {
       localStorage.setItem('theme', theme);
     } catch (e) {
       // localStorage.setItem can throw under some policies; log and continue.
-      // eslint-disable-next-line no-console
       console.error('ThemeToggle: failed to save theme to localStorage', e);
     }
   }, [theme]);

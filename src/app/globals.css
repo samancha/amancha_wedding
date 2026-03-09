@@ -1,57 +1,61 @@
 /* Tahoe OS inspired fonts and palette */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --tahoe-cream: #FFFBF2;
-  --tahoe-lake: #1FA2A6;
-  --tahoe-slate: #5B6B73;
-  --tahoe-glass: rgba(255,255,255,0.7);
+  --tahoe-cream: #fffbf2;
+  --tahoe-lake: #1fa2a6;
+  --tahoe-slate: #5b6b73;
+  --tahoe-glass: rgba(255, 255, 255, 0.7);
   --accent: var(--tahoe-lake);
   --accent-2: #0ea5a4; /* subtle secondary */
 
   /* Desert / Dario-inspired palette */
-  --sand: #F5EDD8;
-  --gold: #C9943A;
-  --gold-light: #E8B85A;
-  --deep-brown: #2C1A0E;
-  --dusty-sage: #6B7F5E;
+  --sand: #f5edd8;
+  --gold: #c9943a;
+  --gold-light: #e8b85a;
+  --deep-brown: #2c1a0e;
+  --dusty-sage: #6b7f5e;
 }
 
 /* Neo 2025 theme overrides */
 .theme-neo {
   --background: linear-gradient(180deg, #0f1724 0%, #081226 100%);
-  --foreground: #E6F2FF;
+  --foreground: #e6f2ff;
   --accent: var(--accent-solid);
-  --accent-grad: linear-gradient(90deg,#7C3AED,#06B6D4);
-  --accent-2: #FFD166;
-  --neo-blob-1: rgba(124,58,237,0.18);
-  --neo-blob-2: rgba(6,182,212,0.14);
-  --accent-solid: #7C3AED;
-  --card-bg: rgba(10,11,16,0.6);
+  --accent-grad: linear-gradient(90deg, #7c3aed, #06b6d4);
+  --accent-2: #ffd166;
+  --neo-blob-1: rgba(124, 58, 237, 0.18);
+  --neo-blob-2: rgba(6, 182, 212, 0.14);
+  --accent-solid: #7c3aed;
+  --card-bg: rgba(10, 11, 16, 0.6);
   --glass-opacity: 0.12;
   --font-scale: 1.03;
 }
 
 /* Future / more experimental theme */
 .theme-future {
-  --background: linear-gradient(180deg,#020617 0%,#071428 100%);
-  --foreground: #DFF6FF;
-  --accent: #00F5FF;
-  --accent-2: #7C3AED;
+  --background: linear-gradient(180deg, #020617 0%, #071428 100%);
+  --foreground: #dff6ff;
+  --accent: #00f5ff;
+  --accent-2: #7c3aed;
   --font-scale: 1.06;
   --font-family: 'Orbitron', Inter, Arial, sans-serif;
 }
 
 /* Future-specific glass card + neon effects */
 .theme-future .glass-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border: 1px solid rgba(0,255,255,0.06);
-  box-shadow: 0 8px 40px rgba(0,245,255,0.06), inset 0 1px 0 rgba(255,255,255,0.02);
-  transition: transform 280ms ease, box-shadow 280ms ease;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(0, 255, 255, 0.06);
+  box-shadow:
+    0 8px 40px rgba(0, 245, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  transition:
+    transform 280ms ease,
+    box-shadow 280ms ease;
   will-change: transform;
 }
 .theme-future .glass-card:hover {
@@ -59,18 +63,25 @@
 }
 
 .theme-future .neo-accent-btn {
-  background: linear-gradient(90deg,#00F5FF 0%, #7C3AED 100%);
+  background: linear-gradient(90deg, #00f5ff 0%, #7c3aed 100%);
   color: white;
-  box-shadow: 0 8px 40px rgba(0,245,255,0.12), 0 0 40px rgba(124,58,237,0.06);
+  box-shadow:
+    0 8px 40px rgba(0, 245, 255, 0.12),
+    0 0 40px rgba(124, 58, 237, 0.06);
   animation: future-shine 4s linear infinite;
 }
 
 @keyframes future-shine {
-  0% { filter: hue-rotate(0deg); }
-  50% { filter: hue-rotate(20deg) brightness(1.04); }
-  100% { filter: hue-rotate(0deg); }
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(20deg) brightness(1.04);
+  }
+  100% {
+    filter: hue-rotate(0deg);
+  }
 }
-
 
 @theme inline {
   --color-background: var(--background);
@@ -119,24 +130,35 @@ body {
 }
 
 @keyframes neo-pulse {
-  0%,100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.08); opacity: 0.8; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.8;
+  }
 }
 
 /* Neo theme glass card */
 .theme-neo .glass-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
-  border: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(8px);
 }
 
 .theme-neo .neo-accent-btn {
   background: var(--accent);
   color: white;
-  box-shadow: 0 8px 30px rgba(124,58,237,0.12);
+  box-shadow: 0 8px 30px rgba(124, 58, 237, 0.12);
 }
 
-.theme-neo .neo-glow { box-shadow: 0 4px 30px rgba(6,182,212,0.12), 0 0 40px rgba(124,58,237,0.06); }
+.theme-neo .neo-glow {
+  box-shadow:
+    0 4px 30px rgba(6, 182, 212, 0.12),
+    0 0 40px rgba(124, 58, 237, 0.06);
+}
 
 /* Accessible focus outlines */
 :focus-visible {
@@ -145,28 +167,51 @@ body {
 }
 
 /* Larger touch targets for mobile/Android */
-button, input[type="button"], input[type="submit"], a {
+button,
+input[type='button'],
+input[type='submit'],
+a {
   touch-action: manipulation;
 }
 
 /* Utility: soft glass card */
 .glass-card {
-  background: linear-gradient(180deg, var(--tahoe-cream), rgba(255,255,255,0.85));
+  background: linear-gradient(180deg, var(--tahoe-cream), rgba(255, 255, 255, 0.85));
   border-radius: 1rem;
   box-shadow: 0 8px 30px rgba(6, 14, 20, 0.08);
 }
 
 /* Gentle transitions + increased hit area for touch */
-button, a {
-  transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+button,
+a {
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    filter 160ms ease;
 }
-button:active, a:active { transform: translateY(1px); }
+button:active,
+a:active {
+  transform: translateY(1px);
+}
 
 /* Ensure large enough touch targets */
-button, a, input, select, textarea { min-height: 40px; }
+button,
+a,
+input,
+select,
+textarea {
+  min-height: 40px;
+}
 
 @media (pointer: coarse) {
-  button, a, input, select, textarea { min-height: 48px; font-size: 16px; }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 48px;
+    font-size: 16px;
+  }
 }
 
 /* Foresty background patterns */
@@ -184,8 +229,7 @@ button, a, input, select, textarea { min-height: 40px; }
   width: 100%;
   height: 100%;
   background-image: 
-    /* Leaf pattern SVG */
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50,10 Q60,30 55,50 Q65,60 50,70 Q35,60 45,50 Q40,30 50,10" fill="%23ffffff" opacity="0.08"/><path d="M30,40 Q35,50 28,65 Q20,70 15,60 Q18,45 30,40" fill="%23ffffff" opacity="0.06"/><path d="M70,35 Q75,48 70,62 Q62,68 58,55 Q62,42 70,35" fill="%23ffffff" opacity="0.07"/></svg>');
+    /* Leaf pattern SVG */ url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50,10 Q60,30 55,50 Q65,60 50,70 Q35,60 45,50 Q40,30 50,10" fill="%23ffffff" opacity="0.08"/><path d="M30,40 Q35,50 28,65 Q20,70 15,60 Q18,45 30,40" fill="%23ffffff" opacity="0.06"/><path d="M70,35 Q75,48 70,62 Q62,68 58,55 Q62,42 70,35" fill="%23ffffff" opacity="0.07"/></svg>');
   background-repeat: repeat;
   background-size: 200px 200px;
   opacity: 0.5;
@@ -201,8 +245,7 @@ button, a, input, select, textarea { min-height: 40px; }
   width: 100%;
   height: 100%;
   background-image: 
-    /* Noise texture */
-    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/></filter><rect width="200" height="200" fill="%23000000" filter="url(%23noise)" opacity="0.03"/></svg>');
+    /* Noise texture */ url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/></filter><rect width="200" height="200" fill="%23000000" filter="url(%23noise)" opacity="0.03"/></svg>');
   background-repeat: repeat;
   opacity: 0.4;
   pointer-events: none;
@@ -213,7 +256,7 @@ button, a, input, select, textarea { min-height: 40px; }
 .tree-silhouettes {
   position: relative;
   height: 120px;
-  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.1) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -225,4 +268,3 @@ button, a, input, select, textarea { min-height: 40px; }
   height: 100%;
   opacity: 0.15;
 }
-

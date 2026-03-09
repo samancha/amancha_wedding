@@ -6,7 +6,9 @@ test('RSVP form controls have accessible names', async ({ page }) => {
   await page.goto(`${BASE}/rsvp`);
   await page.waitForSelector('form');
 
-  const controls = await page.$$('[role="form"] input, [role="form"] select, [role="form"] textarea, form input, form select, form textarea');
+  const controls = await page.$$(
+    '[role="form"] input, [role="form"] select, [role="form"] textarea, form input, form select, form textarea'
+  );
   for (const ctl of controls) {
     const id = await ctl.getAttribute('id');
     const ariaLabel = await ctl.getAttribute('aria-label');

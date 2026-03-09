@@ -21,7 +21,9 @@ test('RSVP with public visibility is visible to admin', async ({ request }) => {
   expect(res.ok()).toBeTruthy();
 
   const adminToken = process.env.ADMIN_TOKEN ?? '';
-  const adminRes = await request.get(`${BASE}/api/admin/rsvps`, { headers: { 'x-admin-token': adminToken } });
+  const adminRes = await request.get(`${BASE}/api/admin/rsvps`, {
+    headers: { 'x-admin-token': adminToken },
+  });
   if (!adminRes.ok()) {
     const body = await adminRes.text();
     throw new Error(`Admin fetch failed (${adminRes.status}): ${body}`);
