@@ -118,12 +118,12 @@ function AdminApp() {
                     {r.visibility === 'PUBLIC' ? 'Public' : 'Private'}
                   </button>
                   <button
-                    aria-pressed={r.confirmed}
+                    aria-pressed={r.confirmed === 'true'}
                     aria-label={`Toggle confirmed for ${r.name}`}
-                    className={`px-3 py-2 rounded-full ${r.confirmed ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
-                    onClick={() => toggleConfirm(r.id, r.confirmed)}
+                    className={`px-3 py-2 rounded-full ${r.confirmed === 'true' ? 'bg-green-500 text-white' : 'bg-gray-200'}`}
+                    onClick={() => toggleConfirm(r.id, r.confirmed === 'true')}
                   >
-                    {r.confirmed ? 'Confirmed' : 'Unconfirmed'}
+                    {r.confirmed === 'true' ? 'Confirmed' : 'Unconfirmed'}
                   </button>
                   <div className="text-sm text-slate-500">
                     {new Date(r.createdAt).toLocaleString()}
