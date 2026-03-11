@@ -1,11 +1,16 @@
 'use client';
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import RsvpForm from '@/components/RsvpForm';
 
-export default function RSVPPage() {
+function RsvpContent() {
   const params = useSearchParams();
   const initialLastName = params.get('q') ?? '';
+  return <RsvpForm initialLastName={initialLastName} />;
+}
+
+export default function RSVPPage() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--sand)', color: 'var(--deep-brown)' }}>
       {/* Minimal nav */}
@@ -60,7 +65,9 @@ export default function RSVPPage() {
           <div className="w-12 h-px mx-auto mt-8" style={{ background: 'var(--gold)' }} />
         </div>
 
-        <RsvpForm initialLastName={initialLastName} />
+        <Suspense fallback={null}>
+          <RsvpContent />
+        </Suspense>
       </main>
 
       <footer
