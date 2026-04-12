@@ -50,6 +50,7 @@ export default function Home() {
     { label: 'Hotel', id: 'hotel' },
     { label: 'Travel', id: 'travel' },
     { label: 'Things To Do', id: 'things' },
+    { label: 'Gifts', id: 'gifts' },
   ];
 
   return (
@@ -558,6 +559,76 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── GIFTS ───────────────────────────────────────────────────── */}
+      <section id="gifts" className="max-w-4xl mx-auto px-6 py-24">
+        <p
+          className="text-xs uppercase tracking-widest mb-4"
+          style={{ color: 'var(--gold)', letterSpacing: '0.25em' }}
+        >
+          Gifts
+        </p>
+        <h2
+          className="text-4xl sm:text-5xl mb-10"
+          style={{
+            fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+            fontWeight: 400,
+            lineHeight: 1.15,
+            color: 'var(--deep-brown)',
+          }}
+        >
+          Gift Registry
+        </h2>
+
+        <div className="w-12 h-px mb-10" style={{ background: 'var(--gold)' }} />
+
+        <div
+          className="space-y-6 text-base leading-relaxed"
+          style={{ color: 'rgba(44,26,14,0.75)', fontFamily: "var(--font-lora, 'Lora', serif)" }}
+        >
+          <p>
+            Your presence at our wedding is the greatest gift of all. However, if you wish to
+            celebrate us with a gift, a contribution toward our new life together would be deeply
+            appreciated.
+          </p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
+            {/* Zelle */}
+            <div
+              style={{
+                border: '1px solid rgba(201,148,58,0.25)',
+                padding: '28px 24px',
+              }}
+            >
+              <p
+                className="text-xs uppercase tracking-widest mb-3"
+                style={{ color: 'var(--gold)', letterSpacing: '0.2em' }}
+              >
+                Zelle
+              </p>
+              <p
+                className="text-2xl mb-2"
+                style={{
+                  fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                  fontWeight: 400,
+                  color: 'var(--deep-brown)',
+                }}
+              >
+                Steve Amancha
+              </p>
+              <p
+                style={{
+                  fontFamily: "var(--font-lora, 'Lora', serif)",
+                  fontSize: '0.95rem',
+                  color: 'rgba(44,26,14,0.6)',
+                }}
+              >
+                Phone number ending in <strong style={{ color: 'var(--deep-brown)' }}>9852</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ─── RSVP TEASER ─────────────────────────────────────────────── */}
       <section
         id="rsvp"
@@ -581,10 +652,20 @@ export default function Home() {
           Olga &amp; <span style={{ fontStyle: 'italic' }}>Steve</span>
         </h2>
         <p
-          className="text-base mb-12 opacity-70"
+          className="text-base mb-4 opacity-70"
           style={{ fontFamily: "var(--font-lora, 'Lora', serif)" }}
         >
           Please let us know if you&apos;ll be joining us on October 17th, 2026.
+        </p>
+        <p
+          className="text-xs uppercase tracking-widest mb-12"
+          style={{
+            letterSpacing: '0.2em',
+            color: 'var(--gold)',
+            opacity: 0.9,
+          }}
+        >
+          RSVP Deadline: August 23rd, 2026
         </p>
 
         {/* Last-name teaser — routes to full RSVP page */}

@@ -3,6 +3,7 @@ import { z } from 'zod';
 
 const rsvpSchema = z.object({
   name: z.string().min(1),
+  firstName: z.string().optional(),
   lastName: z.string().min(1),
   attending: z.enum(['yes', 'no']).optional(),
   meal: z.string().optional(),
@@ -32,10 +33,16 @@ export async function POST(request: Request) {
     // Save to Google Sheets
     try {
       console.log('Importing googleSheets module...');
-      const { appendToGoogleSheet } = await import('../../../../src/lib/googleSheets');
+      const { appendToGoogleSheet, updateGuestRsvpStatus } =
+        await import('../../../../src/lib/googleSheets');
       console.log('Calling appendToGoogleSheet with:', JSON.stringify(data, null, 2));
       await appendToGoogleSheet(data);
       console.log('RSVP successfully saved to Google Sheets');
+
+      // Update RSVP Status column in the guest list sheet
+      if (data.firstName && data.attending) {
+        await updateGuestRsvpStatus(data.firstName, data.lastName, data.attending as 'yes' | 'no');
+      }
     } catch (err) {
       console.error('Google Sheets save error:', err);
       const errorMsg = err instanceof Error ? err.message : String(err);

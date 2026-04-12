@@ -3,7 +3,13 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 type Step = 'search' | 'attending' | 'guests' | 'meal' | 'sent';
-type GuestMatch = { firstName: string; lastName: string; fullName: string; guestCount: number };
+type GuestMatch = {
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  guestCount: number;
+  rsvpStatus: string;
+};
 type AdditionalGuest = {
   firstName: string;
   lastName: string;
@@ -18,14 +24,14 @@ const MEALS = [
     desc: 'Herb roasted breast with seasonal vegetables and pan jus',
   },
   {
-    id: 'salmon',
-    label: 'Salmon',
-    desc: 'Pan seared fillet with lemon butter sauce and wild rice',
-  },
-  {
     id: 'beef',
     label: 'Beef',
     desc: 'Slow braised short rib with red wine reduction and root vegetables',
+  },
+  {
+    id: 'vegetarian',
+    label: 'Vegetarian',
+    desc: 'Seasonal roasted vegetables with herbed grain pilaf and golden sauce',
   },
 ];
 
@@ -143,6 +149,7 @@ export default function RsvpForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: selectedGuest.fullName,
+          firstName: selectedGuest.firstName,
           lastName: selectedGuest.lastName,
           attending,
           meal: attending === 'yes' ? meal : undefined,
@@ -279,6 +286,7 @@ export default function RsvpForm({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {matches.map((g) => {
                 const isSelected = selectedGuest?.fullName === g.fullName;
+                const alreadyRsvped = g.rsvpStatus !== '';
                 return (
                   <button
                     key={g.fullName}
@@ -299,14 +307,33 @@ export default function RsvpForm({
                       transition: 'all 150ms ease',
                     }}
                   >
-                    <span
-                      style={{
-                        fontFamily: "var(--font-lora, 'Lora', serif)",
-                        fontSize: '0.95rem',
-                        color: isSelected ? 'var(--gold, #C9943A)' : 'inherit',
-                      }}
-                    >
-                      {g.fullName}
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      {alreadyRsvped && (
+                        <span title="Already RSVPed" style={{ fontSize: '0.85rem', opacity: 0.55 }}>
+                          🔒
+                        </span>
+                      )}
+                      <span
+                        style={{
+                          fontFamily: "var(--font-lora, 'Lora', serif)",
+                          fontSize: '0.95rem',
+                          color: isSelected ? 'var(--gold, #C9943A)' : 'inherit',
+                        }}
+                      >
+                        {g.fullName}
+                      </span>
+                      {alreadyRsvped && (
+                        <span
+                          style={{
+                            fontSize: '0.65rem',
+                            letterSpacing: '0.12em',
+                            textTransform: 'uppercase',
+                            opacity: 0.45,
+                          }}
+                        >
+                          Already RSVPed
+                        </span>
+                      )}
                     </span>
                     <span
                       style={{

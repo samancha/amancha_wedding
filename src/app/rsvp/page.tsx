@@ -63,6 +63,12 @@ export default function RSVPPage() {
             RSVP
           </h1>
           <div className="w-12 h-px mx-auto mt-8" style={{ background: 'var(--gold)' }} />
+          <p
+            className="text-xs uppercase tracking-widest mt-6"
+            style={{ color: 'var(--gold)', letterSpacing: '0.2em' }}
+          >
+            Deadline: August 23rd, 2026
+          </p>
         </div>
 
         <Suspense fallback={null}>

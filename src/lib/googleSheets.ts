@@ -33,6 +33,7 @@ export type GuestMatch = {
   lastName: string;
   fullName: string;
   guestCount: number;
+  rsvpStatus: string;
 };
 
 type AdditionalGuestData = {
@@ -77,6 +78,7 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
     const lastNameCol = headers.findIndex((h) => h.includes('last'));
     const firstNameCol = headers.findIndex((h) => h.includes('first'));
     const guestCountCol = headers.findIndex((h) => h.includes('guest') && h.includes('count'));
+    const rsvpStatusCol = headers.findIndex((h) => h.includes('rsvp'));
 
     if (lastNameCol < 0) {
       console.warn('verifyGuestLastName: could not find a "Last Name" header column');
@@ -95,17 +97,92 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
         const first = firstNameCol >= 0 ? String(row[firstNameCol] || '').trim() : '';
         const last = String(row[lastNameCol] || '').trim();
         const count = guestCountCol >= 0 ? parseInt(String(row[guestCountCol] || '0'), 10) || 0 : 0;
+        const rsvpStatus = rsvpStatusCol >= 0 ? String(row[rsvpStatusCol] || '').trim() : '';
         return {
           firstName: first,
           lastName: last,
           fullName: [first, last].filter(Boolean).join(' '),
           guestCount: count,
+          rsvpStatus,
         };
       });
 
     return { matches: matched };
   } catch (err) {
     console.error('Guest list lookup error:', err);
+    throw err;
+  }
+}
+
+/**
+ * Updates the RSVP Status column in the guest list sheet for the matching guest.
+ */
+export async function updateGuestRsvpStatus(
+  firstName: string,
+  lastName: string,
+  status: 'yes' | 'no'
+): Promise<void> {
+  try {
+    const auth = getAuthClient();
+
+    const response = await sheets.spreadsheets.values.get({
+      auth,
+      spreadsheetId: GUEST_LIST_SHEET_ID,
+      range: 'A:Z',
+    });
+
+    const rows = response.data.values || [];
+    if (rows.length === 0) return;
+
+    const headers = rows[0].map((c: unknown) => String(c).toLowerCase().trim());
+    const firstNameCol = headers.findIndex((h) => h.includes('first'));
+    const lastNameCol = headers.findIndex((h) => h.includes('last'));
+    const rsvpStatusCol = headers.findIndex((h) => h.includes('rsvp'));
+
+    if (rsvpStatusCol < 0) {
+      console.warn('updateGuestRsvpStatus: could not find RSVP Status column');
+      return;
+    }
+
+    const normalizedFirst = firstName.toLowerCase().trim();
+    const normalizedLast = lastName.toLowerCase().trim();
+
+    const rowIndex = rows.findIndex((row, i) => {
+      if (i === 0) return false;
+      const first =
+        firstNameCol >= 0
+          ? String(row[firstNameCol] || '')
+              .toLowerCase()
+              .trim()
+          : '';
+      const last = String(row[lastNameCol] || '')
+        .toLowerCase()
+        .trim();
+      return first === normalizedFirst && last === normalizedLast;
+    });
+
+    if (rowIndex < 0) {
+      console.warn(`updateGuestRsvpStatus: no row found for ${firstName} ${lastName}`);
+      return;
+    }
+
+    // Convert 0-based column index to A1 column letter (supports up to column Z)
+    const colLetter = String.fromCharCode(65 + rsvpStatusCol);
+    const sheetRow = rowIndex + 1; // rows array is 0-indexed; sheet rows are 1-indexed
+
+    await sheets.spreadsheets.values.update({
+      auth,
+      spreadsheetId: GUEST_LIST_SHEET_ID,
+      range: `${colLetter}${sheetRow}`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [[status]] },
+    });
+
+    console.log(
+      `updateGuestRsvpStatus: set ${firstName} ${lastName} -> ${status} at row ${sheetRow}`
+    );
+  } catch (err) {
+    console.error('updateGuestRsvpStatus error:', err);
     throw err;
   }
 }
