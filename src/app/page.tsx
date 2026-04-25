@@ -440,9 +440,44 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Special Roles */}
+        <div className="mt-14 pt-10" style={{ borderTop: '1px solid rgba(201,148,58,0.2)' }}>
+          <p
+            className="text-xs uppercase tracking-widest text-center mb-8"
+            style={{ color: 'var(--gold)', letterSpacing: '0.2em' }}
+          >
+            Special Roles
+          </p>
+          <div className="flex flex-wrap justify-center gap-x-14 gap-y-6">
+            {[
+              { title: 'Ring Bearer', name: 'Andy Vasconez' },
+              { title: 'Flower Girl', name: 'Caieli Rodriguez' },
+              { title: 'Flower Girl', name: 'Analyse Marius' },
+            ].map((member, i) => (
+              <div key={i} className="text-center">
+                <p
+                  className="text-xs uppercase tracking-widest mb-1"
+                  style={{ color: 'var(--gold)', letterSpacing: '0.18em' }}
+                >
+                  {member.title}
+                </p>
+                <p
+                  style={{
+                    fontFamily: "var(--font-lora, 'Lora', serif)",
+                    fontSize: '1rem',
+                    color: 'var(--deep-brown)',
+                  }}
+                >
+                  {member.name}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
       {/* ─── PHOTO BREAK 1 ───────────────────────────────────────────── */}
-      <div className="w-full relative" style={{ height: '60vh', minHeight: 360 }}>
+      <div className="w-full relative" style={{ height: 'clamp(280px, 50vw, 680px)' }}>
         <Image
           src={break1Img}
           alt=""
@@ -542,12 +577,12 @@ export default function Home() {
       </section>
 
       {/* ─── PHOTO BREAK 2 ───────────────────────────────────────────── */}
-      <div className="w-full relative" style={{ height: '60vh', minHeight: 360 }}>
+      <div className="w-full relative" style={{ height: 'clamp(280px, 50vw, 680px)' }}>
         <Image
           src={break2Img}
           alt=""
           fill
-          style={{ objectFit: 'cover', objectPosition: 'center 25%' }}
+          style={{ objectFit: 'cover', objectPosition: 'center 50%' }}
           sizes="100vw"
         />
       </div>
@@ -633,7 +668,7 @@ export default function Home() {
       </section>
 
       {/* ─── PHOTO BREAK 3 ───────────────────────────────────────────── */}
-      <div className="w-full relative" style={{ height: '60vh', minHeight: 360 }}>
+      <div className="w-full relative" style={{ height: 'clamp(280px, 50vw, 680px)' }}>
         <Image
           src={break3Img}
           alt=""
