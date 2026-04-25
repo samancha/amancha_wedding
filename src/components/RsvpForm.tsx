@@ -83,6 +83,7 @@ export default function RsvpForm({
 
   // Step 2
   const [attending, setAttending] = useState<'yes' | 'no' | null>(null);
+  const [noGuest, setNoGuest] = useState(false);
 
   // Step 3
   const [meal, setMeal] = useState<string | null>(null);
@@ -288,10 +289,17 @@ export default function RsvpForm({
                 const isSelected = selectedGuest?.fullName === g.fullName;
                 const alreadyRsvped = g.rsvpStatus !== '';
                 return (
-                  <button
+                  <div
                     key={g.fullName}
-                    type="button"
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelectedGuest(isSelected ? null : g)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedGuest(isSelected ? null : g);
+                      }
+                    }}
                     style={{
                       width: '100%',
                       textAlign: 'left',
@@ -305,72 +313,89 @@ export default function RsvpForm({
                       justifyContent: 'space-between',
                       cursor: 'pointer',
                       transition: 'all 150ms ease',
+                      userSelect: 'none',
+                      WebkitTapHighlightColor: 'transparent',
                     }}
                   >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      {alreadyRsvped && (
-                        <span title="Already RSVPed" style={{ fontSize: '0.85rem', opacity: 0.55 }}>
-                          🔒
-                        </span>
-                      )}
+                    {/* Name — left side */}
+                    <span
+                      style={{
+                        fontFamily: "var(--font-lora, 'Lora', serif)",
+                        fontSize: '0.95rem',
+                        color: isSelected ? 'var(--gold, #C9943A)' : 'inherit',
+                      }}
+                    >
+                      {g.fullName}
+                    </span>
+
+                    {/* Right side */}
+                    {alreadyRsvped ? (
                       <span
                         style={{
-                          fontFamily: "var(--font-lora, 'Lora', serif)",
-                          fontSize: '0.95rem',
-                          color: isSelected ? 'var(--gold, #C9943A)' : 'inherit',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          flexShrink: 0,
                         }}
                       >
-                        {g.fullName}
-                      </span>
-                      {alreadyRsvped && (
                         <span
                           style={{
-                            fontSize: '0.65rem',
-                            letterSpacing: '0.12em',
+                            fontSize: '0.62rem',
+                            letterSpacing: '0.14em',
                             textTransform: 'uppercase',
-                            opacity: 0.45,
+                            opacity: 0.4,
+                            textAlign: 'right',
+                            lineHeight: 1.3,
                           }}
                         >
                           Already RSVPed
                         </span>
-                      )}
-                    </span>
-                    <span
-                      style={{
-                        color: 'var(--gold, #C9943A)',
-                        fontSize: '0.85rem',
-                        opacity: isSelected ? 1 : 0,
-                        transition: 'opacity 150ms',
-                      }}
-                    >
-                      ✓
-                    </span>
-                  </button>
+                        <span
+                          title="To make changes to your reservation, please reach out to us directly."
+                          style={{
+                            fontSize: '1rem',
+                            opacity: 0.5,
+                            cursor: 'help',
+                            flexShrink: 0,
+                            lineHeight: 1,
+                          }}
+                        >
+                          🔒
+                        </span>
+                      </span>
+                    ) : isSelected ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setStep('attending');
+                        }}
+                        style={{
+                          flexShrink: 0,
+                          background: 'var(--gold, #C9943A)',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 2,
+                          padding: '7px 16px',
+                          fontSize: '0.7rem',
+                          letterSpacing: '0.15em',
+                          textTransform: 'uppercase',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          fontFamily: "var(--font-lora, 'Lora', serif)",
+                          minHeight: 36,
+                          WebkitTapHighlightColor: 'transparent',
+                        }}
+                      >
+                        Continue →
+                      </button>
+                    ) : (
+                      <span style={{ flexShrink: 0, width: 36, minHeight: 36, display: 'block' }} />
+                    )}
+                  </div>
                 );
               })}
             </div>
-
-            {selectedGuest && (
-              <button
-                type="button"
-                onClick={() => setStep('attending')}
-                style={{
-                  marginTop: 20,
-                  width: '100%',
-                  background: 'var(--deep-brown, #2C1A0E)',
-                  color: '#fff',
-                  border: 'none',
-                  padding: '14px',
-                  fontSize: '0.72rem',
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                  cursor: 'pointer',
-                  transition: 'opacity 150ms',
-                }}
-              >
-                Continue →
-              </button>
-            )}
           </div>
         )}
       </div>
@@ -562,6 +587,7 @@ export default function RsvpForm({
             onClick={() => {
               setStep('attending');
               setAdditionalGuests([]);
+              setNoGuest(false);
             }}
             style={{
               background: 'none',
@@ -595,7 +621,49 @@ export default function RsvpForm({
           >
             Please enter the names of the guests joining you.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+
+          {/* No-guest toggle */}
+          <button
+            type="button"
+            onClick={() => setNoGuest((v) => !v)}
+            style={{
+              width: '100%',
+              textAlign: 'left',
+              padding: '16px 18px',
+              border: noGuest
+                ? '1px solid var(--gold, #C9943A)'
+                : '1px solid rgba(201,148,58,0.22)',
+              background: noGuest ? 'rgba(201,148,58,0.10)' : 'rgba(255,255,255,0.03)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              cursor: 'pointer',
+              marginBottom: 20,
+              transition: 'all 150ms ease',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "var(--font-lora, 'Lora', serif)",
+                fontSize: '0.9rem',
+                color: noGuest ? 'var(--gold, #C9943A)' : 'inherit',
+              }}
+            >
+              I will be attending without a guest
+            </span>
+            <span
+              style={{
+                color: 'var(--gold, #C9943A)',
+                fontSize: '0.85rem',
+                opacity: noGuest ? 1 : 0,
+                transition: 'opacity 150ms',
+              }}
+            >
+              ✓
+            </span>
+          </button>
+
+          <div style={{ display: noGuest ? 'none' : 'flex', flexDirection: 'column', gap: 20 }}>
             {additionalGuests.map((g, idx) => (
               <div key={idx}>
                 <p style={{ ...labelStyle, marginBottom: 10 }}>Guest {idx + 1}</p>
@@ -636,18 +704,21 @@ export default function RsvpForm({
 
         <button
           type="button"
-          onClick={() => setStep('meal')}
-          disabled={!allNamed}
+          onClick={() => {
+            if (noGuest) setAdditionalGuests([]);
+            setStep('meal');
+          }}
+          disabled={!noGuest && !allNamed}
           style={{
             width: '100%',
-            background: allNamed ? 'var(--gold, #C9943A)' : 'rgba(44,26,14,0.25)',
+            background: noGuest || allNamed ? 'var(--gold, #C9943A)' : 'rgba(44,26,14,0.25)',
             color: '#fff',
             border: 'none',
             padding: '14px',
             fontSize: '0.72rem',
             letterSpacing: '0.18em',
             textTransform: 'uppercase',
-            cursor: allNamed ? 'pointer' : 'not-allowed',
+            cursor: noGuest || allNamed ? 'pointer' : 'not-allowed',
           }}
         >
           Choose Meals →
@@ -684,7 +755,9 @@ export default function RsvpForm({
           </div>
           <button
             type="button"
-            onClick={() => setStep(additionalGuests.length > 0 ? 'guests' : 'attending')}
+            onClick={() =>
+              setStep(selectedGuest && selectedGuest.guestCount > 0 ? 'guests' : 'attending')
+            }
             style={{
               background: 'none',
               border: 'none',
