@@ -353,13 +353,13 @@ export default function Home() {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {[
-                { title: 'Maid of Honor', name: 'First Last' },
-                { title: 'Bridesmaid', name: 'First Last' },
-                { title: 'Bridesmaid', name: 'First Last' },
-                { title: 'Bridesmaid', name: 'First Last' },
-                { title: 'Bridesmaid', name: 'First Last' },
-                { title: 'Bridesmaid', name: 'First Last' },
-                { title: 'Bridesmaid', name: 'First Last' },
+                { title: 'Maid of Honor', name: 'Amanda Webb' },
+                { title: 'Bridesman', name: 'John Schumacher' },
+                { title: 'Bridesmaid', name: 'Kristen Campen' },
+                { title: 'Bridesmaid', name: 'Alyssa Ayala' },
+                { title: 'Bridesmaid', name: 'Kayla Ayala' },
+                { title: 'Bridesmaid', name: 'Kayla Rodriguez' },
+                { title: 'Bridesmaid', name: 'Gabriella Bello' },
               ].map((member, i) => (
                 <div key={i}>
                   {i > 0 && (
@@ -404,13 +404,13 @@ export default function Home() {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {[
-                { title: 'Best Man', name: 'First Last' },
-                { title: 'Groomsman', name: 'First Last' },
-                { title: 'Groomsman', name: 'First Last' },
-                { title: 'Groomsman', name: 'First Last' },
-                { title: 'Groomsman', name: 'First Last' },
-                { title: 'Groomsman', name: 'First Last' },
-                { title: 'Groomsman', name: 'First Last' },
+                { title: 'Best Man', name: 'Kevin Newhouse' },
+                { title: 'Groomsman', name: 'Eddie Phelps' },
+                { title: 'Groomsman', name: 'Jonathan Rodriguez' },
+                { title: 'Groomsman', name: 'Chris Anderson' },
+                { title: 'Groomsman', name: 'Tim Swing' },
+                { title: 'Groomsman', name: 'Nick Marzano' },
+                { title: 'Groomsman', name: 'Will Gautschi' },
               ].map((member, i) => (
                 <div key={i}>
                   {i > 0 && (
