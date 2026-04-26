@@ -452,7 +452,7 @@ export default function Home() {
           <div className="flex flex-wrap justify-center gap-x-14 gap-y-6">
             {[
               { title: 'Ring Bearer', name: 'Andy Vasconez' },
-              { title: 'Flower Girl', name: 'Caieli Rodriguez' },
+              { title: 'Flower Girl', name: 'Caeli Rodriguez' },
               { title: 'Flower Girl', name: 'Analyse Marius' },
             ].map((member, i) => (
               <div key={i} className="text-center">
