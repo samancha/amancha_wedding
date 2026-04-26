@@ -1,8 +1,9 @@
 'use client';
-import { Suspense } from 'react';
+import { Suspense, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import RsvpForm from '@/components/RsvpForm';
+import { MUSIC_VOLUME } from '@/lib/audioConfig';
 
 function RsvpContent() {
   const params = useSearchParams();
@@ -11,6 +12,16 @@ function RsvpContent() {
 }
 
 export default function RSVPPage() {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    // Play music automatically when the dedicated RSVP page loads
+    if (audioRef.current) audioRef.current.volume = MUSIC_VOLUME;
+    audioRef.current?.play().catch(() => {
+      // Silently swallow autoplay policy rejections
+    });
+  }, []);
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--sand)', color: 'var(--deep-brown)' }}>
       {/* Minimal nav */}
@@ -86,6 +97,10 @@ export default function RSVPPage() {
       >
         Olga &amp; Steve · October 17th 2026
       </footer>
+
+      {/* Hidden audio — plays on mount */}
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={audioRef} src="/mac_wedding_short.mp3" preload="auto" />
     </div>
   );
 }

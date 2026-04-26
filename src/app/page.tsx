@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { MUSIC_VOLUME } from '@/lib/audioConfig';
 
 // Local image imports
 import heroImg from '@/img/O&S-38.jpg';
@@ -18,6 +19,9 @@ export default function Home() {
   const [teaserQuery, setTeaserQuery] = useState('');
   const lastScrollY = useRef(0);
   const heroImgRef = useRef<HTMLDivElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const rsvpSectionRef = useRef<HTMLElement>(null);
+  const [muted, setMuted] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,6 +43,40 @@ export default function Home() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // ── RSVP section IntersectionObserver — triggers audio ──────────────
+  useEffect(() => {
+    const section = rsvpSectionRef.current;
+    const audio = audioRef.current;
+    if (!section || !audio) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            audio.currentTime = 0;
+            audio.play().catch(() => {
+              // Silently swallow autoplay policy rejections
+            });
+          } else {
+            audio.pause();
+          }
+        });
+      },
+      { threshold: 0.2 }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  // ── Sync muted state to audio element ───────────────────────────────
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = MUSIC_VOLUME;
+      audioRef.current.muted = muted;
+    }
+  }, [muted]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -109,6 +147,61 @@ export default function Home() {
             >
               RSVP
             </Link>
+
+            {/* Mute / unmute toggle */}
+            <button
+              type="button"
+              onClick={() => setMuted((m) => !m)}
+              aria-label={muted ? 'Unmute music' : 'Mute music'}
+              title={muted ? 'Unmute music' : 'Mute music'}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 4,
+                opacity: 0.5,
+                transition: 'opacity 150ms',
+                color: 'var(--deep-brown)',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+              onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.5')}
+            >
+              {muted ? (
+                /* Speaker muted */
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <line x1="23" y1="9" x2="17" y2="15" />
+                  <line x1="17" y1="9" x2="23" y2="15" />
+                </svg>
+              ) : (
+                /* Speaker with waves */
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                </svg>
+              )}
+            </button>
           </div>
 
           {/* Mobile hamburger */}
@@ -191,6 +284,7 @@ export default function Home() {
             alt="Olga and Steve"
             fill
             priority
+            loading="eager"
             style={{ objectFit: 'cover', objectPosition: 'center 30%' }}
             sizes="100vw"
           />
@@ -482,6 +576,7 @@ export default function Home() {
           src={break1Img}
           alt=""
           fill
+          loading="lazy"
           style={{ objectFit: 'cover', objectPosition: 'center 40%' }}
           sizes="100vw"
         />
@@ -582,6 +677,7 @@ export default function Home() {
           src={break2Img}
           alt=""
           fill
+          loading="lazy"
           style={{ objectFit: 'cover', objectPosition: 'center 50%' }}
           sizes="100vw"
         />
@@ -673,6 +769,7 @@ export default function Home() {
           src={break3Img}
           alt=""
           fill
+          loading="lazy"
           style={{ objectFit: 'cover', objectPosition: 'center 50%' }}
           sizes="100vw"
         />
@@ -1216,6 +1313,7 @@ export default function Home() {
 
       {/* ─── RSVP TEASER ─────────────────────────────────────────────── */}
       <section
+        ref={rsvpSectionRef}
         id="rsvp"
         className="w-full py-32 px-6 text-center text-white"
         style={{ background: 'var(--deep-brown)' }}
@@ -1314,6 +1412,10 @@ export default function Home() {
       >
         Olga &amp; Steve · October 17th 2026
       </footer>
+
+      {/* Hidden audio — triggered by RSVP section observer */}
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      <audio ref={audioRef} src="/mac_wedding_short.mp3" preload="auto" />
     </div>
   );
 }
