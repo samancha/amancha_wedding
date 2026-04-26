@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 
-const requiredLocal = ['NEXT_PUBLIC_VERCEL_URL'];
+// These are injected automatically by the GitHub Actions → Vercel deploy workflow.
+// Set them as repository secrets in GitHub (Settings → Secrets → Actions).
 const requiredCI = ['VERCEL_TOKEN', 'VERCEL_ORG_ID', 'VERCEL_PROJECT_ID'];
 
 const optionalEmail = [
@@ -24,10 +25,6 @@ function check(vars) {
 }
 
 const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
-
-if (!check(requiredLocal)) {
-  console.warn('Local required envs missing. Create .env.local from .env.example.');
-}
 
 if (isCI) {
   if (!check(requiredCI)) {
