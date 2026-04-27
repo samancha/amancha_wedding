@@ -10,8 +10,7 @@
     "typecheck": "tsc --noEmit",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
-    "test": "echo \"No tests configured.\"",
-    "vercel:check": "node scripts/check-env.js"
+    "test": "echo \"No tests configured.\""
   },
   "dependencies": {
     "googleapis": "^171.4.0",
