@@ -409,6 +409,7 @@ export default function Home() {
           </p>
         </div>
       </section>
+
       {/* ─── BRIDAL PARTY ────────────────────────────────────────────────────── */}
       <section className="max-w-4xl mx-auto px-6 py-24">
         <p
@@ -432,8 +433,24 @@ export default function Home() {
         <div className="w-12 h-px mb-12" style={{ background: 'var(--gold)' }} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-16">
-          {/* Bride’s Side */}
-          <div>
+          {/* Bride's Side */}
+          <div className="text-center">
+            <p
+              className="text-xs uppercase tracking-widest mb-1"
+              style={{ color: 'var(--gold)', letterSpacing: '0.18em' }}
+            >
+              Mother of the Bride
+            </p>
+            <p
+              className="mb-8"
+              style={{
+                fontFamily: "var(--font-lora, 'Lora', serif)",
+                fontSize: '1rem',
+                color: 'var(--deep-brown)',
+              }}
+            >
+              Pam Phelps
+            </p>
             <p
               className="text-sm mb-8"
               style={{
@@ -445,7 +462,7 @@ export default function Home() {
             >
               Bride&apos;s Side
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {[
                 { title: 'Maid of Honor', name: 'Amanda Webb' },
                 { title: 'Bridesman', name: 'John Schumacher' },
@@ -455,13 +472,13 @@ export default function Home() {
                 { title: 'Bridesmaid', name: 'Kayla Rodriguez' },
                 { title: 'Bridesmaid', name: 'Gabriella Bello' },
               ].map((member, i) => (
-                <div key={i}>
+                <div key={i} style={{ width: '100%' }}>
                   {i > 0 && (
                     <div
                       style={{ width: '100%', height: 1, background: 'rgba(201,148,58,0.15)' }}
                     />
                   )}
-                  <div className="py-4">
+                  <div className="py-4 text-center">
                     <p
                       className="text-xs uppercase tracking-widest mb-1"
                       style={{ color: 'var(--gold)', letterSpacing: '0.18em' }}
@@ -483,8 +500,24 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Groom’s Side */}
-          <div>
+          {/* Groom's Side */}
+          <div className="text-center">
+            <p
+              className="text-xs uppercase tracking-widest mb-1"
+              style={{ color: 'var(--gold)', letterSpacing: '0.18em' }}
+            >
+              Mother of the Groom
+            </p>
+            <p
+              className="mb-8"
+              style={{
+                fontFamily: "var(--font-lora, 'Lora', serif)",
+                fontSize: '1rem',
+                color: 'var(--deep-brown)',
+              }}
+            >
+              Magdalena Amancha
+            </p>
             <p
               className="text-sm mb-8"
               style={{
@@ -496,7 +529,7 @@ export default function Home() {
             >
               Groom&apos;s Side
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               {[
                 { title: 'Best Man', name: 'Kevin Newhouse' },
                 { title: 'Groomsman', name: 'Eddie Phelps' },
@@ -506,13 +539,13 @@ export default function Home() {
                 { title: 'Groomsman', name: 'Nick Marzano' },
                 { title: 'Groomsman', name: 'Will Gautschi' },
               ].map((member, i) => (
-                <div key={i}>
+                <div key={i} style={{ width: '100%' }}>
                   {i > 0 && (
                     <div
                       style={{ width: '100%', height: 1, background: 'rgba(201,148,58,0.15)' }}
                     />
                   )}
-                  <div className="py-4">
+                  <div className="py-4 text-center">
                     <p
                       className="text-xs uppercase tracking-widest mb-1"
                       style={{ color: 'var(--gold)', letterSpacing: '0.18em' }}
