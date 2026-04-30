@@ -88,15 +88,20 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
     const dataRows = rows.slice(1);
     const matched: GuestMatch[] = dataRows
       .filter((row) => {
+        // eslint-disable-next-line security/detect-object-injection
         const cell = String(row[lastNameCol] || '')
           .toLowerCase()
           .trim();
         return cell.length > 0 && (cell.includes(normalized) || normalized.includes(cell));
       })
       .map((row) => {
+        // eslint-disable-next-line security/detect-object-injection
         const first = firstNameCol >= 0 ? String(row[firstNameCol] || '').trim() : '';
+        // eslint-disable-next-line security/detect-object-injection
         const last = String(row[lastNameCol] || '').trim();
+        // eslint-disable-next-line security/detect-object-injection
         const count = guestCountCol >= 0 ? parseInt(String(row[guestCountCol] || '0'), 10) || 0 : 0;
+        // eslint-disable-next-line security/detect-object-injection
         const rsvpStatus = rsvpStatusCol >= 0 ? String(row[rsvpStatusCol] || '').trim() : '';
         return {
           firstName: first,
@@ -151,10 +156,12 @@ export async function updateGuestRsvpStatus(
       if (i === 0) return false;
       const first =
         firstNameCol >= 0
-          ? String(row[firstNameCol] || '')
+          ? // eslint-disable-next-line security/detect-object-injection
+            String(row[firstNameCol] || '')
               .toLowerCase()
               .trim()
           : '';
+      // eslint-disable-next-line security/detect-object-injection
       const last = String(row[lastNameCol] || '')
         .toLowerCase()
         .trim();
@@ -312,11 +319,12 @@ export async function updateGuestCountInGoogleSheet(
     });
 
     const rows = response.data.values || [];
-    const headerRow = rows[0];
+    // headerRow removed (unused)
 
     // Find the matching row
     let matchingRowIndex = -1;
     for (let i = 1; i < rows.length; i++) {
+      // eslint-disable-next-line security/detect-object-injection
       const row = rows[i];
       const rowName = (row[1] || '').toLowerCase().trim();
       const rowBirthday = (row[3] || '').trim();

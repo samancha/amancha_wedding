@@ -22,7 +22,7 @@ function AdminApp() {
         const json = await res.json();
         setRsvps(json.data || []);
       }
-    } catch (err) {
+    } catch {
       setError('Network error');
     } finally {
       setLoading(false);
@@ -34,6 +34,7 @@ function AdminApp() {
       localStorage.setItem('admin_token', token);
       load();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   async function toggleConfirm(id: string, confirmed: boolean) {
@@ -44,7 +45,7 @@ function AdminApp() {
         body: JSON.stringify({ confirmed: !confirmed }),
       });
       if (res.ok) load();
-    } catch (err) {
+    } catch {
       setError('Unable to update');
     }
   }
@@ -58,7 +59,7 @@ function AdminApp() {
         body: JSON.stringify({ visibility: newVis }),
       });
       if (res.ok) load();
-    } catch (err) {
+    } catch {
       setError('Unable to update visibility');
     }
   }

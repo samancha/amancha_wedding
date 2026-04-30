@@ -99,7 +99,6 @@ export default function RSVPPage() {
       </footer>
 
       {/* Hidden audio — plays on mount */}
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio ref={audioRef} src="/mac_wedding_short.mp3" preload="auto" />
     </div>
   );

@@ -41,7 +41,7 @@ export default function RsvpLookup() {
         setStatus('notfound');
         setResult(null);
       }
-    } catch (err) {
+    } catch {
       setStatus('error');
     }
   }
@@ -68,7 +68,7 @@ export default function RsvpLookup() {
       } else {
         alert('Failed to update guest count. Please try again.');
       }
-    } catch (err) {
+    } catch {
       alert('Error updating guest count. Please try again.');
     } finally {
       setUpdatingGuests(false);

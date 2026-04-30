@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "prettier:check": "prettier --check .",
     "prettier:write": "prettier --write .",
-    "test": "echo \"No tests configured.\""
+    "test": "playwright test",
+    "test:mobile": "playwright test tests/playwright/mobile.spec.ts",
+    "test:ui": "playwright test --ui"
   },
   "dependencies": {
     "googleapis": "^171.4.0",
@@ -20,6 +22,7 @@
     "zod": "^4.2.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

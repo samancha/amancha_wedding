@@ -1,6 +1,8 @@
 'use client';
-import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+
+const BANNER_IMAGES = ['/images/GOPR0938.JPG', '/images/GOPR0825.JPG'];
 
 export default function IntroBanner({
   date = 'October 17, 2026',
@@ -13,11 +15,10 @@ export default function IntroBanner({
   dress?: string;
   pickup?: string;
 }) {
-  const images = ['/images/GOPR0938.JPG', '/images/GOPR0825.JPG'];
   const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    const t = setInterval(() => setIdx((i) => (i + 1) % images.length), 8000);
+    const t = setInterval(() => setIdx((i) => (i + 1) % BANNER_IMAGES.length), 8000);
     return () => clearInterval(t);
   }, []);
 
@@ -28,12 +29,13 @@ export default function IntroBanner({
           {/* Image Carousel */}
           <div className="relative rounded-2xl overflow-hidden shadow-lg">
             <div className="aspect-[3/2] relative">
-              {images.map((src, i) => (
-                <img
+              {BANNER_IMAGES.map((src, i) => (
+                <Image
                   key={src}
                   src={src}
                   alt={`Banner ${i + 1}`}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
+                  fill
+                  className={`object-cover transition-opacity duration-1000 ${
                     i === idx ? 'opacity-100' : 'opacity-0 pointer-events-none'
                   }`}
                 />
@@ -41,7 +43,7 @@ export default function IntroBanner({
             </div>
             {/* Dot indicators */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
-              {images.map((_, i) => (
+              {BANNER_IMAGES.map((_, i) => (
                 <button
                   key={i}
                   aria-label={`Show banner ${i + 1}`}

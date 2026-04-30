@@ -21,17 +21,12 @@ const MEALS = [
   {
     id: 'chicken',
     label: 'Chicken',
-    desc: 'Herb roasted breast with seasonal vegetables and pan jus',
+    desc: 'Lemon butter chicken with capers',
   },
   {
     id: 'beef',
     label: 'Beef',
-    desc: 'Slow braised short rib with red wine reduction and root vegetables',
-  },
-  {
-    id: 'vegetarian',
-    label: 'Vegetarian',
-    desc: 'Seasonal roasted vegetables with herbed grain pilaf and golden sauce',
+    desc: 'Slow roasted smoked Angus beef brisket',
   },
 ];
 

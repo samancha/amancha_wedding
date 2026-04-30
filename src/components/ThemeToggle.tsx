@@ -4,14 +4,13 @@ import React, { useEffect, useState } from 'react';
 type Theme = 'tahoe' | 'neo' | 'future';
 
 export default function ThemeToggle() {
-  // Lazy initializer reads localStorage once on mount — safe in 'use client' components.
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window === 'undefined') return 'tahoe';
     try {
       const saved = localStorage.getItem('theme') as Theme;
       if (saved && ['tahoe', 'neo', 'future'].includes(saved)) return saved;
     } catch {
-      // localStorage unavailable (private browsing, strict policies)
+      // localStorage unavailable
     }
     return 'tahoe';
   });

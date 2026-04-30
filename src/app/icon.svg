@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#065f46"/>
+      <stop offset="100%" stop-color="#065f46"/>
+    </linearGradient>
+  </defs>
+  <!-- Single elegant ring -->
+  <circle cx="32" cy="32" r="27" fill="none" stroke="url(#g)" stroke-width="3"/>
+  <!-- O on the left -->
+  <text x="20" y="39" font-family="Georgia, serif" font-size="16" font-weight="normal" fill="#D4A574" text-anchor="middle" letter-spacing="1">O</text>
+  <!-- & in between -->
+  <text x="32" y="37" font-family="Georgia, serif" font-size="10" font-weight="normal" fill="#D4A574" text-anchor="middle">&amp;</text>
+  <!-- S on the right -->
+  <text x="44" y="39" font-family="Georgia, serif" font-size="16" font-weight="normal" fill="#D4A574" text-anchor="middle" letter-spacing="1">S</text>
+</svg>

@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import IntroBanner from '@/components/IntroBanner';
 import RsvpForm from '@/components/RsvpForm';
