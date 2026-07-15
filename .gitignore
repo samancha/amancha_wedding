@@ -12,6 +12,7 @@ amancha-wedding-service-key.json
 
 # testing
 /coverage
+/test-results
 
 # next.js
 /.next/

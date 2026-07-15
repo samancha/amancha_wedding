@@ -1,12 +1,13 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import Image, { type StaticImageData } from 'next/image';
+import Image, { getImageProps, type StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MUSIC_VOLUME } from '@/lib/audioConfig';
 
 // Local image imports
 import heroImg from '@/img/O&S-38.jpg';
+import heroMobileImg from '@/img/O&S-38-mobile.jpg';
 import storyImg from '@/img/O&S-52.jpg';
 import storyBreakImg from '@/img/O&S-74.jpg';
 import break2Img from '@/img/O&S-47.jpg';
@@ -15,6 +16,26 @@ import break4Img from '@/img/O&S-44.jpg';
 import break5Img from '@/img/O&S-53.jpg';
 import break6Img from '@/img/O&S-57.jpg';
 import rsvpBgImg from '@/img/O&S-51.jpg';
+
+const heroDesktopImage = getImageProps({
+  src: heroImg,
+  alt: 'Olga and Steve',
+  fill: true,
+  sizes: '100vw',
+  loading: 'eager',
+  fetchPriority: 'high',
+  style: { objectFit: 'cover', objectPosition: 'center 30%' },
+}).props;
+
+const heroMobileImage = getImageProps({
+  src: heroMobileImg,
+  alt: 'Olga and Steve',
+  fill: true,
+  sizes: '100vw',
+  loading: 'eager',
+  fetchPriority: 'high',
+  style: { objectFit: 'cover', objectPosition: 'center center' },
+}).props;
 
 type PhotoBreakProps = {
   src: StaticImageData;
@@ -77,8 +98,10 @@ export default function Home() {
       const y = window.scrollY;
 
       // Parallax: drift image at 35% scroll speed
-      if (heroImgRef.current) {
+      if (heroImgRef.current && window.innerWidth >= 768) {
         heroImgRef.current.style.transform = `translateY(${y * 0.35}px)`;
+      } else if (heroImgRef.current) {
+        heroImgRef.current.style.transform = 'none';
       }
 
       // Nav hide / show
@@ -333,19 +356,15 @@ export default function Home() {
           style={{ height: '100svh', minHeight: 600, overflow: 'hidden' }}
         >
           {/* Parallax image wrapper — oversized so the image has room to drift */}
-          <div
-            ref={heroImgRef}
-            style={{ position: 'absolute', inset: '-20% 0', willChange: 'transform' }}
-          >
-            <Image
-              src={heroImg}
-              alt="Olga and Steve"
-              fill
-              priority
-              loading="eager"
-              style={{ objectFit: 'cover', objectPosition: 'center 30%' }}
-              sizes="100vw"
-            />
+          <div ref={heroImgRef} className="hero-media">
+            <picture>
+              <source
+                media="(max-width: 767px)"
+                srcSet={heroMobileImage.srcSet}
+                sizes={heroMobileImage.sizes}
+              />
+              <img {...heroDesktopImage} alt="Olga and Steve" />
+            </picture>
           </div>
           {/* Dark overlay */}
           <div
