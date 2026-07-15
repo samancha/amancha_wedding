@@ -645,7 +645,7 @@ export default function Home() {
               {[
                 { title: 'Ring Bearer', name: 'Andy Vasconez' },
                 { title: 'Flower Girl', name: 'Caeli Rodriguez' },
-                { title: 'Flower Girl', name: 'Analyse Marius' },
+                { title: 'Flower Girl', name: 'Annalise Marius' },
               ].map((member, i) => (
                 <div key={i} className="text-center">
                   <p
@@ -729,6 +729,7 @@ export default function Home() {
                   (520) 868-9900
                 </a>{' '}
                 and reference the <em>Amancha / Phelps Wedding</em> to receive a discounted rate.
+                Also check online for the best available rates.
               </p>
             </div>
             <div>
@@ -876,7 +877,7 @@ export default function Home() {
               color: 'var(--deep-brown)',
             }}
           >
-            Things To Do
+            Things to do
           </h2>
 
           <div className="w-12 h-px mb-10" style={{ background: 'var(--gold)' }} />
@@ -896,7 +897,7 @@ export default function Home() {
               },
               {
                 name: 'Downtown Phoenix',
-                desc: 'Explore the heart of Phoenix with world-class dining, rooftop bars, and vibrant nightlife. A short drive from Florence with plenty to see and do.',
+                desc: 'Explore the heart of Phoenix with world-class dining, rooftop bars, and vibrant nightlife.',
               },
               {
                 name: 'Roosevelt Row',
@@ -1350,17 +1351,6 @@ export default function Home() {
                   maxWidth: 336,
                 }}
               >
-                <p
-                  className="text-lg mb-4"
-                  style={{
-                    fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
-                    fontWeight: 400,
-                    color: 'var(--deep-brown)',
-                  }}
-                >
-                  Steve Amancha
-                </p>
-
                 {/* Zelle */}
                 <div className="mb-5">
                   <p

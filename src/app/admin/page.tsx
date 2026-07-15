@@ -32,7 +32,8 @@ function AdminApp() {
   useEffect(() => {
     if (token) {
       localStorage.setItem('admin_token', token);
-      load();
+      const id = setTimeout(() => load(), 0);
+      return () => clearTimeout(id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);

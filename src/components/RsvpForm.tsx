@@ -8,6 +8,8 @@ type GuestMatch = {
   lastName: string;
   fullName: string;
   guestCount: number;
+  rehearsalDinner: boolean;
+  brunch: boolean;
   rsvpStatus: string;
 };
 type AdditionalGuest = {
@@ -67,7 +69,7 @@ export default function RsvpForm({
   compact?: boolean;
   initialLastName?: string;
 }) {
-  const spacing = compact ? 'space-y-5' : 'space-y-7';
+  const spacing = compact ? 'space-y-6' : 'space-y-10';
 
   // Step 1
   const [lastNameQuery, setLastNameQuery] = useState(initialLastName ?? '');
@@ -79,6 +81,9 @@ export default function RsvpForm({
   // Step 2
   const [attending, setAttending] = useState<'yes' | 'no' | null>(null);
   const [noGuest, setNoGuest] = useState(false);
+
+  const [rehearsalDinner, setRehearsalDinner] = useState<'yes' | 'no' | null>(null);
+  const [brunch, setBrunch] = useState<'yes' | 'no' | null>(null);
 
   // Step 3
   const [meal, setMeal] = useState<string | null>(null);
@@ -125,7 +130,10 @@ export default function RsvpForm({
 
   // Auto-trigger search when component mounts with a pre-filled last name (from ?q= param)
   useEffect(() => {
-    if (initialLastName?.trim()) doSearch(initialLastName.trim());
+    if (initialLastName?.trim()) {
+      const id = setTimeout(() => doSearch(initialLastName.trim()), 0);
+      return () => clearTimeout(id);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -148,6 +156,8 @@ export default function RsvpForm({
           firstName: selectedGuest.firstName,
           lastName: selectedGuest.lastName,
           attending,
+          rehearsalDinner:
+            attending === 'yes' && selectedGuest.rehearsalDinner ? rehearsalDinner : undefined,
           meal: attending === 'yes' ? meal : undefined,
           allergies: attending === 'yes' ? allergies : undefined,
           additionalGuests:
@@ -201,7 +211,7 @@ export default function RsvpForm({
             fontWeight: 400,
           }}
         >
-          {attending === 'yes' ? "We'll see you there!" : "We'll miss you!"}
+          {attending === 'yes' ? 'We&apos;ll see you there!' : 'We&apos;ll miss you!'}
         </h3>
         <p className="text-sm mb-10 opacity-60">{successMessage}</p>
         <Link
@@ -325,39 +335,31 @@ export default function RsvpForm({
 
                     {/* Right side */}
                     {alreadyRsvped ? (
-                      <span
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // setStep('attending');
+                        }}
                         style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 8,
                           flexShrink: 0,
+                          background: 'var(--gold, #C9943A)',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 2,
+                          padding: '7px 16px',
+                          fontSize: '0.7rem',
+                          letterSpacing: '0.15em',
+                          textTransform: 'uppercase',
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          fontFamily: "var(--font-lora, 'Lora', serif)",
+                          minHeight: 36,
+                          WebkitTapHighlightColor: 'transparent',
                         }}
                       >
-                        <span
-                          style={{
-                            fontSize: '0.62rem',
-                            letterSpacing: '0.14em',
-                            textTransform: 'uppercase',
-                            opacity: 0.4,
-                            textAlign: 'right',
-                            lineHeight: 1.3,
-                          }}
-                        >
-                          Already RSVPed
-                        </span>
-                        <span
-                          title="To make changes to your reservation, please reach out to us directly."
-                          style={{
-                            fontSize: '1rem',
-                            opacity: 0.5,
-                            cursor: 'help',
-                            flexShrink: 0,
-                            lineHeight: 1,
-                          }}
-                        >
-                          🔒
-                        </span>
-                      </span>
+                        View/Edit RSVP
+                      </button>
                     ) : isSelected ? (
                       <button
                         type="button"
@@ -449,7 +451,7 @@ export default function RsvpForm({
 
         {/* Attending cards */}
         <div>
-          <p style={{ ...labelStyle, marginBottom: 12 }}>Will you attend?</p>
+          <p style={{ ...labelStyle, marginBottom: 12 }}>Will you attend the wedding?</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {(['yes', 'no'] as const).map((choice) => {
               const selected = attending === choice;
@@ -485,6 +487,170 @@ export default function RsvpForm({
             })}
           </div>
         </div>
+
+        <Divider />
+
+        {attending === 'yes' && selectedGuest?.rehearsalDinner && (
+          <div>
+            {/* <p style={{ ...labelStyle, marginBottom: 12 }}>
+              You are invited to our rehearsal dinner.
+            </p> */}
+
+            <div style={{ marginTop: 12, textAlign: 'center' }}>
+              <p style={{ ...labelStyle, marginBottom: 6 }}>Rehearsal Dinner Venue</p>
+              <p
+                style={{
+                  fontFamily: "var(--font-lora, 'Lora', serif)",
+                  fontSize: '0.95rem',
+                  margin: 0,
+                }}
+              >
+                <strong>San Tan Flat</strong>
+              </p>
+              <p style={{ marginTop: 4 }}>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=6185+Hunt+Hwy+Queen+Creek+AZ+85142"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: 'var(--gold)',
+                    borderBottom: '1px solid rgba(201,148,58,0.25)',
+                    paddingBottom: 1,
+                  }}
+                >
+                  6185 Hunt Hwy, Queen Creek, AZ 85142
+                </a>
+              </p>
+              <p
+                style={{
+                  fontFamily: "var(--font-lora, 'Lora', serif)",
+                  fontSize: '0.9rem',
+                  opacity: 0.9,
+                  marginTop: 8,
+                }}
+              >
+                Private seating with a dedicated bar; live music is open to the public. Please
+                arrive by 6pm — dinner will be served around 7pm.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              {(['yes', 'no'] as const).map((choice) => {
+                const selected = rehearsalDinner === choice;
+                return (
+                  <button
+                    key={choice}
+                    type="button"
+                    onClick={() => setRehearsalDinner(choice)}
+                    style={{
+                      padding: '20px 12px',
+                      textAlign: 'center',
+                      border: selected
+                        ? '1px solid var(--gold, #C9943A)'
+                        : '1px solid rgba(201,148,58,0.22)',
+                      background: selected ? 'rgba(201,148,58,0.10)' : 'rgba(255,255,255,0.03)',
+                      cursor: 'pointer',
+                      transition: 'all 150ms ease',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                        fontSize: '1rem',
+                        fontStyle: 'italic',
+                        fontWeight: 400,
+                        color: selected ? 'var(--gold, #C9943A)' : 'inherit',
+                      }}
+                    >
+                      {choice === 'yes' ? 'Joyfully Accepts' : 'Regretfully Declines'}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {attending === 'yes' && selectedGuest?.brunch && (
+          <div>
+            {/* <p style={{ ...labelStyle, marginBottom: 12, alignSelf: 'center' }}>
+              You are invited to our Sunday brunch.
+            </p> */}
+
+            <div style={{ marginTop: 12, textAlign: 'center' }}>
+              <p style={{ ...labelStyle, marginBottom: 6 }}>Sunday Brunch Venue</p>
+              <p
+                style={{
+                  fontFamily: "var(--font-lora, 'Lora', serif)",
+                  fontSize: '0.95rem',
+                  margin: 0,
+                }}
+              >
+                <strong>The Farm at South Mountain</strong>
+              </p>
+              <p style={{ marginTop: 4 }}>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=6106+S+32nd+St+Phoenix+AZ+85042"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: 'var(--gold)',
+                    borderBottom: '1px solid rgba(201,148,58,0.25)',
+                    paddingBottom: 1,
+                  }}
+                >
+                  6106 S 32nd St, Phoenix, AZ 85042
+                </a>
+              </p>
+              <p
+                style={{
+                  fontFamily: "var(--font-lora, 'Lora', serif)",
+                  fontSize: '0.9rem',
+                  opacity: 0.9,
+                  marginTop: 8,
+                }}
+              >
+                Open seating — we usually gather in the middle picnic area. We&apos;ll be walking
+                around by 11:00am.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              {(['yes', 'no'] as const).map((choice) => {
+                const selected = brunch === choice;
+                return (
+                  <button
+                    key={choice}
+                    type="button"
+                    onClick={() => setBrunch(choice)}
+                    style={{
+                      padding: '20px 12px',
+                      textAlign: 'center',
+                      border: selected
+                        ? '1px solid var(--gold, #C9943A)'
+                        : '1px solid rgba(201,148,58,0.22)',
+                      background: selected ? 'rgba(201,148,58,0.10)' : 'rgba(255,255,255,0.03)',
+                      cursor: 'pointer',
+                      transition: 'all 150ms ease',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                        fontSize: '1rem',
+                        fontStyle: 'italic',
+                        fontWeight: 400,
+                        color: selected ? 'var(--gold, #C9943A)' : 'inherit',
+                      }}
+                    >
+                      {choice === 'yes' ? 'Joyfully Accepts' : 'Regretfully Declines'}
+                    </p>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Actions */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

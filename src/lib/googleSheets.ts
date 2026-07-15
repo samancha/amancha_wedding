@@ -33,6 +33,8 @@ export type GuestMatch = {
   lastName: string;
   fullName: string;
   guestCount: number;
+  rehearsalDinner: boolean;
+  brunch: boolean;
   rsvpStatus: string;
 };
 
@@ -49,6 +51,8 @@ type RsvpData = {
   attending?: string;
   meal?: string;
   allergies?: string;
+  rehearsalDinner?: string;
+  brunch?: string;
   additionalGuests?: AdditionalGuestData[];
 };
 
@@ -78,6 +82,8 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
     const lastNameCol = headers.findIndex((h) => h.includes('last'));
     const firstNameCol = headers.findIndex((h) => h.includes('first'));
     const guestCountCol = headers.findIndex((h) => h.includes('guest') && h.includes('count'));
+    const rehearsalDinnerCol = headers.findIndex((h) => h.includes('rehearsal'));
+    const brunchCol = headers.findIndex((h) => h.includes('brunch'));
     const rsvpStatusCol = headers.findIndex((h) => h.includes('rsvp'));
 
     if (lastNameCol < 0) {
@@ -101,6 +107,16 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
         const last = String(row[lastNameCol] || '').trim();
         // eslint-disable-next-line security/detect-object-injection
         const count = guestCountCol >= 0 ? parseInt(String(row[guestCountCol] || '0'), 10) || 0 : 0;
+        const rehearsalDinner =
+          rehearsalDinnerCol >= 0
+            ? // eslint-disable-next-line security/detect-object-injection
+              String(row[rehearsalDinnerCol] || '').toLowerCase() === 'yes'
+            : false;
+        const brunch =
+          brunchCol >= 0
+            ? // eslint-disable-next-line security/detect-object-injection
+              String(row[brunchCol] || '').toLowerCase() === 'yes'
+            : false;
         // eslint-disable-next-line security/detect-object-injection
         const rsvpStatus = rsvpStatusCol >= 0 ? String(row[rsvpStatusCol] || '').trim() : '';
         return {
@@ -108,6 +124,8 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
           lastName: last,
           fullName: [first, last].filter(Boolean).join(' '),
           guestCount: count,
+          rehearsalDinner,
+          brunch,
           rsvpStatus,
         };
       });
@@ -215,14 +233,18 @@ export async function appendToGoogleSheet(rsvp: RsvpData) {
         rsvp.name, // B: Full Name
         rsvp.lastName, // C: Last Name
         rsvp.attending || '', // D: Attending
-        rsvp.meal || '', // E: Meal
-        rsvp.allergies || '', // F: Dietary Restrictions
+        rsvp.rehearsalDinner || '', // E: Rehearsal Dinner
+        rsvp.brunch || '', // F: Brunch
+        rsvp.meal || '', // G: Meal
+        rsvp.allergies || '', // H: Dietary Restrictions
       ],
       ...(rsvp.additionalGuests || []).map((g) => [
         timestamp,
         `${g.firstName} ${g.lastName}`.trim(),
         g.lastName,
         rsvp.attending || '',
+        '', // rehearsalDinner placeholder for additional guest
+        '', // brunch placeholder for additional guest
         g.meal || '',
         g.allergies || '',
       ]),
@@ -233,7 +255,7 @@ export async function appendToGoogleSheet(rsvp: RsvpData) {
     const response = await sheets.spreadsheets.values.append({
       auth,
       spreadsheetId,
-      range: 'Sheet1!A:F',
+      range: 'Sheet1!A:H',
       valueInputOption: 'RAW',
       requestBody: {
         values,

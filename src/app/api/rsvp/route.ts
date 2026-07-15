@@ -6,6 +6,7 @@ const rsvpSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().min(1),
   attending: z.enum(['yes', 'no']).optional(),
+  brunch: z.enum(['yes', 'no']).optional(),
   meal: z.string().optional(),
   allergies: z.string().optional(),
   additionalGuests: z
@@ -13,6 +14,8 @@ const rsvpSchema = z.object({
       z.object({
         firstName: z.string(),
         lastName: z.string(),
+        rehearsalDinner: z.enum(['yes', 'no']).optional(),
+        brunch: z.enum(['yes', 'no']).optional(),
         meal: z.string().optional(),
         allergies: z.string().optional(),
       })
