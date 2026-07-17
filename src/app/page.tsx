@@ -457,10 +457,9 @@ export default function Home() {
               }}
             >
               <p>
-                It all started on a pedal pub. Brought together by mutual work friends celebrating a
-                birthday, we found ourselves buying each other drinks somewhere between the first
-                stop and the last — and by the end of the evening, we&apos;d exchanged numbers with
-                every intention of staying in touch.
+                Celebrating a birthday, we found ourselves with Amanda, the Maid of Honor, riding
+                around on a pedal pub hopping bar to bar. By the final stop and by the end of the
+                evening, we&apos;d exchanged numbers withevery intention of staying in touch.
               </p>
               <p>
                 Our first date was anything but ordinary: a stroll through Ranch Market, picking out
