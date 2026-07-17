@@ -24,7 +24,7 @@ const heroDesktopImage = getImageProps({
   sizes: '100vw',
   loading: 'eager',
   fetchPriority: 'high',
-  style: { objectFit: 'cover', objectPosition: 'center 30%' },
+  style: { objectFit: 'cover' },
 }).props;
 
 const heroMobileImage = getImageProps({
@@ -34,7 +34,7 @@ const heroMobileImage = getImageProps({
   sizes: '100vw',
   loading: 'eager',
   fetchPriority: 'high',
-  style: { objectFit: 'cover', objectPosition: 'center center' },
+  style: { objectFit: 'cover' },
 }).props;
 
 type PhotoBreakProps = {
@@ -363,7 +363,7 @@ export default function Home() {
                 srcSet={heroMobileImage.srcSet}
                 sizes={heroMobileImage.sizes}
               />
-              <img {...heroDesktopImage} alt="Olga and Steve" />
+              <img {...heroDesktopImage} alt="Olga and Steve" className="hero-media-image" />
             </picture>
           </div>
           {/* Dark overlay */}
