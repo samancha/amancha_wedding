@@ -211,7 +211,7 @@ export default function RsvpForm({
             fontWeight: 400,
           }}
         >
-          {attending === 'yes' ? 'We&apos;ll see you there!' : 'We&apos;ll miss you!'}
+          {attending === 'yes' ? 'See you there!' : "We'll miss you!"}
         </h3>
         <p className="text-sm mb-10 opacity-60">{successMessage}</p>
         <Link
