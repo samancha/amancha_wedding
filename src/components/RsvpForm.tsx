@@ -96,6 +96,19 @@ export default function RsvpForm({
     setAdditionalGuests((prev) => prev.map((g, i) => (i === idx ? { ...g, ...patch } : g)));
   }
 
+  function openAttendingStep(guest: GuestMatch, seedAttending: 'yes' | 'no' | null) {
+    setSelectedGuest(guest);
+    setAttending(seedAttending);
+    setRehearsalDinner(null);
+    setBrunch(null);
+    setMeal(null);
+    setAllergies('');
+    setAdditionalGuests([]);
+    setNoGuest(false);
+    setSubmitError(null);
+    setStep('attending');
+  }
+
   // Submit
   const [step, setStep] = useState<Step>('search');
   const [submitting, setSubmitting] = useState(false);
@@ -339,7 +352,10 @@ export default function RsvpForm({
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          // setStep('attending');
+                          openAttendingStep(
+                            g,
+                            g.rsvpStatus === 'yes' || g.rsvpStatus === 'no' ? g.rsvpStatus : null
+                          );
                         }}
                         style={{
                           flexShrink: 0,
@@ -365,7 +381,7 @@ export default function RsvpForm({
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setStep('attending');
+                          openAttendingStep(g, null);
                         }}
                         style={{
                           flexShrink: 0,
