@@ -393,11 +393,23 @@ export default function Home() {
               Olga &amp; <span style={{ fontStyle: 'italic' }}>Steve</span>
             </h1>
             <p
-              className="text-base sm:text-lg uppercase tracking-widest mb-8 opacity-80"
+              className="text-base sm:text-lg uppercase tracking-widest mb-3 opacity-80"
               style={{ letterSpacing: '0.2em' }}
             >
               October 17th 2026 · Florence, Arizona
             </p>
+            <Link
+              href="#hotel"
+              className="text-sm sm:text-base uppercase tracking-widest mb-8 opacity-90 transition-opacity hover:opacity-100"
+              style={{
+                color: '#fff',
+                letterSpacing: '0.2em',
+                borderBottom: '1px solid rgba(255,255,255,0.55)',
+                paddingBottom: 3,
+              }}
+            >
+              The Windmill Winery
+            </Link>
             <Link
               href="/rsvp"
               className="text-sm uppercase tracking-widest px-8 py-3 transition-opacity hover:opacity-80"
@@ -664,6 +676,7 @@ export default function Home() {
                 { title: 'Ring Bearer', name: 'Andy Vasconez' },
                 { title: 'Flower Girl', name: 'Caeli Rodriguez' },
                 { title: 'Flower Girl', name: 'Annalise Marius' },
+                { title: 'Escort', name: 'Nathan Phelps' },
               ].map((member, i) => (
                 <div key={i} className="text-center">
                   <p
@@ -730,6 +743,33 @@ export default function Home() {
                   fontWeight: 600,
                 }}
               >
+                The Windmill Winery
+              </h3>
+              <p>1140 W Butte Ave, Florence, AZ 85132</p>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=The+Windmill+Winery+1140+W+Butte+Ave+Florence+AZ+85132"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block text-sm uppercase tracking-widest transition-opacity hover:opacity-70 mt-3"
+                style={{
+                  color: 'var(--gold)',
+                  letterSpacing: '0.15em',
+                  borderBottom: '1px solid var(--gold)',
+                  paddingBottom: 2,
+                }}
+              >
+                Get Directions to The Windmill Winery
+              </a>
+            </div>
+            <div>
+              <h3
+                className="text-xl mb-2"
+                style={{
+                  fontFamily: "var(--font-playfair, 'Playfair Display', serif)",
+                  color: 'var(--deep-brown)',
+                  fontWeight: 600,
+                }}
+              >
                 GreenTree Inn &amp; Suites
               </h3>
               <p>
@@ -782,22 +822,6 @@ export default function Home() {
                 a comfortable base for the weekend, roughly an hour from the venue with plenty of
                 dining and accommodation options nearby.
               </p>
-            </div>
-            <div>
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=Windmill+Winery+Florence+AZ"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block text-sm uppercase tracking-widest transition-opacity hover:opacity-70 mt-2"
-                style={{
-                  color: 'var(--gold)',
-                  letterSpacing: '0.15em',
-                  borderBottom: '1px solid var(--gold)',
-                  paddingBottom: 2,
-                }}
-              >
-                Get Directions →
-              </a>
             </div>
           </div>
         </section>
