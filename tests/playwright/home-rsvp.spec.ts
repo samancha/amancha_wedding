@@ -27,8 +27,8 @@ test('Home shows the hero and routes the RSVP teaser', async ({ page }) => {
     'https://www.google.com/maps/search/?api=1&query=The+Windmill+Winery+1140+W+Butte+Ave+Florence+AZ+85132'
   );
 
-  await expect(page.getByText('Escort', { exact: true })).toBeVisible();
-  await expect(page.getByText('Nathan Phelps', { exact: true })).toBeVisible();
+  await expect(page.getByText('Accompanying Bride Down the Aisle', { exact: true })).toBeVisible();
+  await expect(page.getByText('Brother: Nathan Phelps', { exact: true })).toBeVisible();
 
   const teaser = page.locator('#rsvp');
   await expect(teaser.getByPlaceholder('Enter your last name')).toBeVisible();

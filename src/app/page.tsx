@@ -676,7 +676,7 @@ export default function Home() {
                 { title: 'Ring Bearer', name: 'Andy Vasconez' },
                 { title: 'Flower Girl', name: 'Caeli Rodriguez' },
                 { title: 'Flower Girl', name: 'Annalise Marius' },
-                { title: 'Escort', name: 'Nathan Phelps' },
+                { title: 'Accompanying Bride Down the Aisle', name: 'Brother: Nathan Phelps' },
               ].map((member, i) => (
                 <div key={i} className="text-center">
                   <p
