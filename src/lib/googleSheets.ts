@@ -243,6 +243,31 @@ export function buildRsvpRows(rsvp: RsvpData, timestamp: string): string[][] {
   ];
 }
 
+function isRsvpTimestamp(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    /^\d{4}-\d{2}-\d{2}T/.test(value) &&
+    !Number.isNaN(Date.parse(value))
+  );
+}
+
+/**
+ * Finds the first row after the RSVP data, ignoring analysis cells and
+ * malformed rows that do not have the response timestamp in column A.
+ * The returned row is 1-indexed, matching Google Sheets A1 notation.
+ */
+export function findNextRsvpRow(rows: readonly (readonly unknown[])[]): number {
+  let lastRsvpRow = 1; // Header row.
+
+  rows.forEach((row, index) => {
+    if (isRsvpTimestamp(row[0]) && String(row[1] || '').trim() && String(row[2] || '').trim()) {
+      lastRsvpRow = index + 1;
+    }
+  });
+
+  return lastRsvpRow + 1;
+}
+
 export async function appendToGoogleSheet(rsvp: RsvpData) {
   try {
     console.log('appendToGoogleSheet called with:', rsvp);
@@ -260,12 +285,20 @@ export async function appendToGoogleSheet(rsvp: RsvpData) {
     const timestamp = new Date().toISOString();
     const values = buildRsvpRows(rsvp, timestamp);
 
-    console.log('Appending values to Google Sheet:', values);
-
-    const response = await sheets.spreadsheets.values.append({
+    const existing = await sheets.spreadsheets.values.get({
       auth,
       spreadsheetId,
       range: 'Sheet1!A:H',
+    });
+    const startRow = findNextRsvpRow(existing.data.values || []);
+    const endRow = startRow + values.length - 1;
+
+    console.log(`Writing RSVP rows ${startRow}-${endRow} to Google Sheet:`, values);
+
+    const response = await sheets.spreadsheets.values.update({
+      auth,
+      spreadsheetId,
+      range: `Sheet1!A${startRow}:H${endRow}`,
       valueInputOption: 'RAW',
       requestBody: {
         values,

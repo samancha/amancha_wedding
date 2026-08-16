@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { rsvpSchema } from '../../src/lib/rsvpSchema';
-import { buildRsvpRows } from '../../src/lib/googleSheets';
+import { buildRsvpRows, findNextRsvpRow } from '../../src/lib/googleSheets';
 
 test('the RSVP route schema preserves rehearsal dinner and brunch choices', () => {
   const parsed = rsvpSchema.parse({
@@ -76,4 +76,19 @@ test('additional-guest rows keep meal/allergies but leave rehearsal dinner and b
   expect(additionalRow[5]).toBe('none');
   expect(additionalRow[6]).toBe('');
   expect(additionalRow[7]).toBe('');
+});
+
+test('the next RSVP row ignores analysis cells and malformed rows below the data', () => {
+  const rows = [
+    ['Timestamp', 'Full Name', 'Last Name'],
+    ['2026-08-15T00:00:00.000Z', 'First Guest', 'Guest'],
+    ['2026-08-15T00:01:00.000Z', 'Second Guest', 'Guest'],
+    [],
+    [],
+    ['Duplicates', '', 'Count yes', '95', '', 'Beef'],
+    ['', '', '17'],
+    ['', '', '2026-08-16T22:31:01.041Z', 'Misaligned Guest'],
+  ];
+
+  expect(findNextRsvpRow(rows)).toBe(4);
 });
