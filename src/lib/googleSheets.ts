@@ -45,7 +45,7 @@ type AdditionalGuestData = {
   allergies?: string;
 };
 
-type RsvpData = {
+export type RsvpData = {
   name: string;
   lastName: string;
   attending?: string;
@@ -212,6 +212,37 @@ export async function updateGuestRsvpStatus(
   }
 }
 
+/**
+ * Builds the response-sheet rows for a primary guest and any additional
+ * guests. Pure and credential-free so the E/F/G/H column contract
+ * (meal, dietary restrictions, rehearsal dinner, brunch) can be
+ * regression-tested without a live Google Sheets call.
+ */
+export function buildRsvpRows(rsvp: RsvpData, timestamp: string): string[][] {
+  return [
+    [
+      timestamp,
+      rsvp.name, // B: Full Name
+      rsvp.lastName, // C: Last Name
+      rsvp.attending || '', // D: Attending
+      rsvp.meal || '', // E: Meal
+      rsvp.allergies || '', // F: Dietary Restrictions
+      rsvp.rehearsalDinner || '', // G: Rehearsal Dinner
+      rsvp.brunch || '', // H: Brunch
+    ],
+    ...(rsvp.additionalGuests || []).map((g) => [
+      timestamp,
+      `${g.firstName} ${g.lastName}`.trim(),
+      g.lastName,
+      rsvp.attending || '',
+      g.meal || '',
+      g.allergies || '',
+      '', // rehearsalDinner placeholder for additional guest
+      '', // brunch placeholder for additional guest
+    ]),
+  ];
+}
+
 export async function appendToGoogleSheet(rsvp: RsvpData) {
   try {
     console.log('appendToGoogleSheet called with:', rsvp);
@@ -227,28 +258,7 @@ export async function appendToGoogleSheet(rsvp: RsvpData) {
     }
 
     const timestamp = new Date().toISOString();
-    const values: string[][] = [
-      [
-        timestamp,
-        rsvp.name, // B: Full Name
-        rsvp.lastName, // C: Last Name
-        rsvp.attending || '', // D: Attending
-        rsvp.rehearsalDinner || '', // E: Rehearsal Dinner
-        rsvp.brunch || '', // F: Brunch
-        rsvp.meal || '', // G: Meal
-        rsvp.allergies || '', // H: Dietary Restrictions
-      ],
-      ...(rsvp.additionalGuests || []).map((g) => [
-        timestamp,
-        `${g.firstName} ${g.lastName}`.trim(),
-        g.lastName,
-        rsvp.attending || '',
-        '', // rehearsalDinner placeholder for additional guest
-        '', // brunch placeholder for additional guest
-        g.meal || '',
-        g.allergies || '',
-      ]),
-    ];
+    const values = buildRsvpRows(rsvp, timestamp);
 
     console.log('Appending values to Google Sheet:', values);
 

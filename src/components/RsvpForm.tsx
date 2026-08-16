@@ -171,6 +171,7 @@ export default function RsvpForm({
           attending,
           rehearsalDinner:
             attending === 'yes' && selectedGuest.rehearsalDinner ? rehearsalDinner : undefined,
+          brunch: attending === 'yes' && selectedGuest.brunch ? brunch : undefined,
           meal: attending === 'yes' ? meal : undefined,
           allergies: attending === 'yes' ? allergies : undefined,
           additionalGuests:

@@ -119,3 +119,63 @@ test('the ?q= auto-search path still loads results before the user continues', a
   await expect(page.getByText('Responding as')).toBeVisible();
   await expect(page.getByText('Sam Query', { exact: true })).toBeVisible();
 });
+
+test('invited guests submit meal, rehearsal dinner, and brunch choices in the RSVP payload', async ({
+  page,
+}) => {
+  const guest = makeGuest({
+    firstName: 'Bailey',
+    lastName: 'Invite',
+    fullName: 'Bailey Invite',
+    guestCount: 0,
+    rehearsalDinner: true,
+    brunch: true,
+  });
+
+  let submittedBody: Record<string, unknown> | null = null;
+
+  await mockGuestLookup(page, (lastName) =>
+    lastName.toLowerCase().includes('invite') ? guest : null
+  );
+
+  await page.route('**/api/rsvp', async (route) => {
+    submittedBody = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        message: 'Thanks, Bailey Invite! Your RSVP has been received.',
+      }),
+    });
+  });
+
+  await page.goto(`${BASE}/rsvp`);
+  await page.fill('#rsvp-lastname', 'Invite');
+  await page.click('button[type="submit"]');
+
+  await expect(page.getByText('Select your name')).toBeVisible();
+  await page.locator('[role="button"]', { hasText: 'Bailey Invite' }).click();
+  await page.locator('button', { hasText: 'Continue →' }).click();
+
+  await page.locator('button', { hasText: 'Joyfully Accepts' }).first().click();
+  await page.locator('button', { hasText: 'Joyfully Accepts' }).nth(1).click();
+  await page.locator('button', { hasText: 'Joyfully Accepts' }).nth(2).click();
+  await page.locator('button', { hasText: 'Choose Your Meal →' }).click();
+
+  await page.locator('button', { hasText: 'Chicken' }).click();
+  await page.fill('#rsvp-allergies', 'Shellfish allergy');
+  await page.locator('button', { hasText: 'Confirm Reservation' }).click();
+
+  await expect(page.getByText('See you there!')).toBeVisible();
+  expect(submittedBody).toMatchObject({
+    name: 'Bailey Invite',
+    firstName: 'Bailey',
+    lastName: 'Invite',
+    attending: 'yes',
+    meal: 'chicken',
+    allergies: 'Shellfish allergy',
+    rehearsalDinner: 'yes',
+    brunch: 'yes',
+  });
+});
