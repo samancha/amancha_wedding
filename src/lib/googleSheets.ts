@@ -36,6 +36,13 @@ export type GuestMatch = {
   rehearsalDinner: boolean;
   brunch: boolean;
   rsvpStatus: string;
+  saved: {
+    meal: string;
+    allergies: string;
+    rehearsalDinner: 'yes' | 'no' | null;
+    brunch: 'yes' | 'no' | null;
+    updatedAt: string;
+  };
 };
 
 type AdditionalGuestData = {
@@ -55,6 +62,161 @@ export type RsvpData = {
   brunch?: string;
   additionalGuests?: AdditionalGuestData[];
 };
+
+export type GuestRsvpSnapshot = {
+  attending: 'yes' | 'no';
+  meal?: string;
+  allergies?: string;
+  rehearsalDinner?: 'yes' | 'no';
+  brunch?: 'yes' | 'no';
+};
+
+type GuestListColumns = {
+  firstName: number;
+  lastName: number;
+  guestCount: number;
+  rehearsalDinner: number;
+  brunch: number;
+  rsvpStatus: number;
+  rsvpMeal: number;
+  rsvpDietaryRestrictions: number;
+  rsvpRehearsalDinner: number;
+  rsvpBrunch: number;
+  rsvpUpdatedAt: number;
+};
+
+type GuestSnapshotWrite = {
+  data: Array<{ range: string; values: string[][] }>;
+};
+
+function normalizeHeader(value: unknown): string {
+  return String(value).trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function columnToA1(columnIndex: number): string {
+  let result = '';
+  let value = columnIndex + 1;
+
+  while (value > 0) {
+    const remainder = (value - 1) % 26;
+    result = String.fromCharCode(65 + remainder) + result;
+    value = Math.floor((value - 1) / 26);
+  }
+
+  return result;
+}
+
+/**
+ * Resolves guest-list columns by their complete, normalized header text.
+ * Keeping invitation eligibility and saved RSVP answers distinct prevents a
+ * reordered column from silently changing what is read or written.
+ */
+export function resolveGuestListColumns(headers: readonly unknown[]): GuestListColumns {
+  const indexOf = (header: string) =>
+    headers.findIndex((value) => normalizeHeader(value) === header);
+
+  return {
+    firstName: indexOf('first name'),
+    lastName: indexOf('last name'),
+    guestCount: indexOf('guest count'),
+    rehearsalDinner: indexOf('rehearsal dinner'),
+    brunch: indexOf('brunch'),
+    rsvpStatus: indexOf('rsvp status'),
+    rsvpMeal: indexOf('rsvp meal'),
+    rsvpDietaryRestrictions: indexOf('rsvp dietary restrictions'),
+    rsvpRehearsalDinner: indexOf('rsvp rehearsal dinner'),
+    rsvpBrunch: indexOf('rsvp brunch'),
+    rsvpUpdatedAt: indexOf('rsvp updated at'),
+  };
+}
+
+function responseChoice(value: unknown): 'yes' | 'no' | null {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase();
+  return normalized === 'yes' || normalized === 'no' ? normalized : null;
+}
+
+function columnValue(row: readonly unknown[], column: number): string {
+  // eslint-disable-next-line security/detect-object-injection
+  return column >= 0 ? String(row[column] || '').trim() : '';
+}
+
+/**
+ * Produces the two guest-list ranges for an RSVP state snapshot. Returning
+ * null makes a partially configured guest list non-fatal to an RSVP submit.
+ */
+export function buildGuestSnapshotWrite(
+  rows: readonly (readonly unknown[])[],
+  firstName: string,
+  lastName: string,
+  snapshot: GuestRsvpSnapshot,
+  updatedAt: string
+): GuestSnapshotWrite | null {
+  if (rows.length === 0) return null;
+
+  const columns = resolveGuestListColumns(rows[0]);
+  const requiredColumns = [
+    columns.firstName,
+    columns.lastName,
+    columns.rsvpStatus,
+    columns.rsvpMeal,
+    columns.rsvpDietaryRestrictions,
+    columns.rsvpRehearsalDinner,
+    columns.rsvpBrunch,
+    columns.rsvpUpdatedAt,
+  ];
+
+  if (requiredColumns.some((column) => column < 0)) return null;
+
+  const snapshotColumns = [
+    columns.rsvpMeal,
+    columns.rsvpDietaryRestrictions,
+    columns.rsvpRehearsalDinner,
+    columns.rsvpBrunch,
+    columns.rsvpUpdatedAt,
+  ];
+  if (!snapshotColumns.every((column, index) => column === snapshotColumns[0] + index)) {
+    return null;
+  }
+
+  const normalizedFirst = firstName.toLowerCase().trim();
+  const normalizedLast = lastName.toLowerCase().trim();
+  const rowIndex = rows.findIndex((row, index) => {
+    if (index === 0) return false;
+    return (
+      columnValue(row, columns.firstName).toLowerCase() === normalizedFirst &&
+      columnValue(row, columns.lastName).toLowerCase() === normalizedLast
+    );
+  });
+
+  if (rowIndex < 0) return null;
+
+  const values =
+    snapshot.attending === 'yes'
+      ? [
+          snapshot.meal || '',
+          snapshot.allergies || '',
+          snapshot.rehearsalDinner || '',
+          snapshot.brunch || '',
+          updatedAt,
+        ]
+      : ['', '', '', '', updatedAt];
+  const sheetRow = rowIndex + 1;
+
+  return {
+    data: [
+      {
+        range: `${columnToA1(columns.rsvpStatus)}${sheetRow}`,
+        values: [[snapshot.attending]],
+      },
+      {
+        range: `${columnToA1(snapshotColumns[0])}${sheetRow}:${columnToA1(snapshotColumns[4])}${sheetRow}`,
+        values: [values],
+      },
+    ],
+  };
+}
 
 /**
  * Searches the guest list sheet for all rows whose Last Name cell
@@ -78,13 +240,15 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
     const normalized = lastName.toLowerCase().trim();
 
     // Locate column indices from header row
-    const headers = rows[0].map((c: unknown) => String(c).toLowerCase().trim());
-    const lastNameCol = headers.findIndex((h) => h.includes('last'));
-    const firstNameCol = headers.findIndex((h) => h.includes('first'));
-    const guestCountCol = headers.findIndex((h) => h.includes('guest') && h.includes('count'));
-    const rehearsalDinnerCol = headers.findIndex((h) => h.includes('rehearsal'));
-    const brunchCol = headers.findIndex((h) => h.includes('brunch'));
-    const rsvpStatusCol = headers.findIndex((h) => h.includes('rsvp'));
+    const columns = resolveGuestListColumns(rows[0]);
+    const {
+      lastName: lastNameCol,
+      firstName: firstNameCol,
+      guestCount: guestCountCol,
+      rehearsalDinner: rehearsalDinnerCol,
+      brunch: brunchCol,
+      rsvpStatus: rsvpStatusCol,
+    } = columns;
 
     if (lastNameCol < 0) {
       console.warn('verifyGuestLastName: could not find a "Last Name" header column');
@@ -127,6 +291,13 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
           rehearsalDinner,
           brunch,
           rsvpStatus,
+          saved: {
+            meal: columnValue(row, columns.rsvpMeal),
+            allergies: columnValue(row, columns.rsvpDietaryRestrictions),
+            rehearsalDinner: responseChoice(columnValue(row, columns.rsvpRehearsalDinner)),
+            brunch: responseChoice(columnValue(row, columns.rsvpBrunch)),
+            updatedAt: columnValue(row, columns.rsvpUpdatedAt),
+          },
         };
       });
 
@@ -138,12 +309,12 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
 }
 
 /**
- * Updates the RSVP Status column in the guest list sheet for the matching guest.
+ * Updates the RSVP status and saved answer snapshot for the matching guest.
  */
-export async function updateGuestRsvpStatus(
+export async function updateGuestRsvpSnapshot(
   firstName: string,
   lastName: string,
-  status: 'yes' | 'no'
+  snapshot: GuestRsvpSnapshot
 ): Promise<void> {
   try {
     const auth = getAuthClient();
@@ -154,60 +325,32 @@ export async function updateGuestRsvpStatus(
       range: 'A:Z',
     });
 
-    const rows = response.data.values || [];
-    if (rows.length === 0) return;
-
-    const headers = rows[0].map((c: unknown) => String(c).toLowerCase().trim());
-    const firstNameCol = headers.findIndex((h) => h.includes('first'));
-    const lastNameCol = headers.findIndex((h) => h.includes('last'));
-    const rsvpStatusCol = headers.findIndex((h) => h.includes('rsvp'));
-
-    if (rsvpStatusCol < 0) {
-      console.warn('updateGuestRsvpStatus: could not find RSVP Status column');
+    const write = buildGuestSnapshotWrite(
+      response.data.values || [],
+      firstName,
+      lastName,
+      snapshot,
+      new Date().toISOString()
+    );
+    if (!write) {
+      console.warn(
+        `updateGuestRsvpSnapshot: expected headers or guest row missing for ${firstName} ${lastName}`
+      );
       return;
     }
 
-    const normalizedFirst = firstName.toLowerCase().trim();
-    const normalizedLast = lastName.toLowerCase().trim();
-
-    const rowIndex = rows.findIndex((row, i) => {
-      if (i === 0) return false;
-      const first =
-        firstNameCol >= 0
-          ? // eslint-disable-next-line security/detect-object-injection
-            String(row[firstNameCol] || '')
-              .toLowerCase()
-              .trim()
-          : '';
-      // eslint-disable-next-line security/detect-object-injection
-      const last = String(row[lastNameCol] || '')
-        .toLowerCase()
-        .trim();
-      return first === normalizedFirst && last === normalizedLast;
-    });
-
-    if (rowIndex < 0) {
-      console.warn(`updateGuestRsvpStatus: no row found for ${firstName} ${lastName}`);
-      return;
-    }
-
-    // Convert 0-based column index to A1 column letter (supports up to column Z)
-    const colLetter = String.fromCharCode(65 + rsvpStatusCol);
-    const sheetRow = rowIndex + 1; // rows array is 0-indexed; sheet rows are 1-indexed
-
-    await sheets.spreadsheets.values.update({
+    await sheets.spreadsheets.values.batchUpdate({
       auth,
       spreadsheetId: GUEST_LIST_SHEET_ID,
-      range: `${colLetter}${sheetRow}`,
-      valueInputOption: 'RAW',
-      requestBody: { values: [[status]] },
+      requestBody: {
+        valueInputOption: 'RAW',
+        ...write,
+      },
     });
 
-    console.log(
-      `updateGuestRsvpStatus: set ${firstName} ${lastName} -> ${status} at row ${sheetRow}`
-    );
+    console.log(`updateGuestRsvpSnapshot: saved RSVP snapshot for ${firstName} ${lastName}`);
   } catch (err) {
-    console.error('updateGuestRsvpStatus error:', err);
+    console.error('updateGuestRsvpSnapshot error:', err);
     throw err;
   }
 }

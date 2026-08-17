@@ -11,6 +11,13 @@ type GuestMatch = {
   rehearsalDinner: boolean;
   brunch: boolean;
   rsvpStatus: string;
+  saved?: {
+    meal: string;
+    allergies: string;
+    rehearsalDinner: 'yes' | 'no' | null;
+    brunch: 'yes' | 'no' | null;
+    updatedAt: string;
+  };
 };
 type AdditionalGuest = {
   firstName: string;
@@ -97,12 +104,20 @@ export default function RsvpForm({
   }
 
   function openAttendingStep(guest: GuestMatch, seedAttending: 'yes' | 'no' | null) {
+    const isSavedAcceptance = seedAttending === 'yes';
+    const saved = guest.saved ?? {
+      meal: '',
+      allergies: '',
+      rehearsalDinner: null,
+      brunch: null,
+      updatedAt: '',
+    };
     setSelectedGuest(guest);
     setAttending(seedAttending);
-    setRehearsalDinner(null);
-    setBrunch(null);
-    setMeal(null);
-    setAllergies('');
+    setRehearsalDinner(isSavedAcceptance && guest.rehearsalDinner ? saved.rehearsalDinner : null);
+    setBrunch(isSavedAcceptance && guest.brunch ? saved.brunch : null);
+    setMeal(isSavedAcceptance ? saved.meal || null : null);
+    setAllergies(isSavedAcceptance ? saved.allergies : '');
     setAdditionalGuests([]);
     setNoGuest(false);
     setSubmitError(null);

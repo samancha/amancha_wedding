@@ -10,6 +10,13 @@ type GuestMatch = {
   rehearsalDinner: boolean;
   brunch: boolean;
   rsvpStatus: string;
+  saved: {
+    meal: string;
+    allergies: string;
+    rehearsalDinner: 'yes' | 'no' | null;
+    brunch: 'yes' | 'no' | null;
+    updatedAt: string;
+  };
 };
 
 function makeGuest(overrides: Partial<GuestMatch>): GuestMatch {
@@ -21,6 +28,13 @@ function makeGuest(overrides: Partial<GuestMatch>): GuestMatch {
     rehearsalDinner: false,
     brunch: false,
     rsvpStatus: '',
+    saved: {
+      meal: '',
+      allergies: '',
+      rehearsalDinner: null,
+      brunch: null,
+      updatedAt: '',
+    },
     ...overrides,
   };
 }
@@ -67,6 +81,56 @@ test('already-RSVPed guests can open View/Edit and land in the attending step', 
   await expect(page.getByText('Alex Edit', { exact: true })).toBeVisible();
   await expect(page.getByText('Will you attend the wedding?')).toBeVisible();
   await expect(page.locator('button', { hasText: 'Choose Your Meal →' })).toBeVisible();
+});
+
+test('View/Edit restores a saved meal, dietary note, and eligible event answers', async ({
+  page,
+}) => {
+  const guest = makeGuest({
+    firstName: 'Bailey',
+    lastName: 'Saved',
+    fullName: 'Bailey Saved',
+    rehearsalDinner: true,
+    brunch: true,
+    rsvpStatus: 'yes',
+    saved: {
+      meal: 'chicken',
+      allergies: 'Shellfish allergy',
+      rehearsalDinner: 'yes',
+      brunch: 'no',
+      updatedAt: '2026-08-17T02:30:00.000Z',
+    },
+  });
+  let submittedBody: Record<string, unknown> | null = null;
+
+  await mockGuestLookup(page, (lastName) =>
+    lastName.toLowerCase().includes('saved') ? guest : null
+  );
+  await page.route('**/api/rsvp', async (route) => {
+    submittedBody = route.request().postDataJSON() as Record<string, unknown>;
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({ ok: true, message: 'Thanks, Bailey Saved!' }),
+    });
+  });
+
+  await page.goto(`${BASE}/rsvp`);
+  await page.fill('#rsvp-lastname', 'Saved');
+  await page.click('button[type="submit"]');
+  await page.locator('button', { hasText: 'View/Edit RSVP' }).click();
+  await page.locator('button', { hasText: 'Choose Your Meal →' }).click();
+
+  await expect(page.locator('#rsvp-allergies')).toHaveValue('Shellfish allergy');
+  await page.locator('button', { hasText: 'Confirm Reservation' }).click();
+
+  expect(submittedBody).toMatchObject({
+    attending: 'yes',
+    meal: 'chicken',
+    allergies: 'Shellfish allergy',
+    rehearsalDinner: 'yes',
+    brunch: 'no',
+  });
 });
 
 test('new guests still advance through Continue to the attending step', async ({ page }) => {

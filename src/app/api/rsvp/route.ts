@@ -14,15 +14,21 @@ export async function POST(request: Request) {
     // Save to Google Sheets
     try {
       console.log('Importing googleSheets module...');
-      const { appendToGoogleSheet, updateGuestRsvpStatus } =
+      const { appendToGoogleSheet, updateGuestRsvpSnapshot } =
         await import('../../../../src/lib/googleSheets');
       console.log('Calling appendToGoogleSheet with:', JSON.stringify(data, null, 2));
       await appendToGoogleSheet(data);
       console.log('RSVP successfully saved to Google Sheets');
 
-      // Update RSVP Status column in the guest list sheet
+      // Update RSVP status and answers in the guest list sheet.
       if (data.firstName && data.attending) {
-        await updateGuestRsvpStatus(data.firstName, data.lastName, data.attending as 'yes' | 'no');
+        await updateGuestRsvpSnapshot(data.firstName, data.lastName, {
+          attending: data.attending,
+          meal: data.meal,
+          allergies: data.allergies,
+          rehearsalDinner: data.rehearsalDinner,
+          brunch: data.brunch,
+        });
       }
     } catch (err) {
       console.error('Google Sheets save error:', err);
