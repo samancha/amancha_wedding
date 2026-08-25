@@ -54,6 +54,7 @@ type AdditionalGuestData = {
 
 export type RsvpData = {
   name: string;
+  firstName?: string;
   lastName: string;
   attending?: string;
   meal?: string;
@@ -89,8 +90,26 @@ type GuestSnapshotWrite = {
   data: Array<{ range: string; values: string[][] }>;
 };
 
+const guestListHeaderCandidates = {
+  firstName: ['first name', 'first', 'given name'],
+  lastName: ['last name', 'last', 'surname'],
+  guestCount: ['guest count'],
+  rehearsalDinner: ['rehearsal dinner'],
+  brunch: ['brunch'],
+  rsvpStatus: ['rsvp status', 'rsvp'],
+  rsvpMeal: ['rsvp meal', 'meal'],
+  rsvpDietaryRestrictions: ['rsvp dietary restrictions'],
+  rsvpRehearsalDinner: ['rsvp rehearsal dinner', 'rsvp rehearsal'],
+  rsvpBrunch: ['rsvp brunch'],
+  rsvpUpdatedAt: ['rsvp updated at'],
+} as const;
+
 function normalizeHeader(value: unknown): string {
   return String(value).trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function findHeaderIndex(headers: readonly unknown[], candidates: readonly string[]): number {
+  return headers.findIndex((value) => candidates.includes(normalizeHeader(value)));
 }
 
 function columnToA1(columnIndex: number): string {
@@ -112,22 +131,32 @@ function columnToA1(columnIndex: number): string {
  * reordered column from silently changing what is read or written.
  */
 export function resolveGuestListColumns(headers: readonly unknown[]): GuestListColumns {
-  const indexOf = (header: string) =>
-    headers.findIndex((value) => normalizeHeader(value) === header);
-
   return {
-    firstName: indexOf('first name'),
-    lastName: indexOf('last name'),
-    guestCount: indexOf('guest count'),
-    rehearsalDinner: indexOf('rehearsal dinner'),
-    brunch: indexOf('brunch'),
-    rsvpStatus: indexOf('rsvp status'),
-    rsvpMeal: indexOf('rsvp meal'),
-    rsvpDietaryRestrictions: indexOf('rsvp dietary restrictions'),
-    rsvpRehearsalDinner: indexOf('rsvp rehearsal dinner'),
-    rsvpBrunch: indexOf('rsvp brunch'),
-    rsvpUpdatedAt: indexOf('rsvp updated at'),
+    firstName: findHeaderIndex(headers, guestListHeaderCandidates.firstName),
+    lastName: findHeaderIndex(headers, guestListHeaderCandidates.lastName),
+    guestCount: findHeaderIndex(headers, guestListHeaderCandidates.guestCount),
+    rehearsalDinner: findHeaderIndex(headers, guestListHeaderCandidates.rehearsalDinner),
+    brunch: findHeaderIndex(headers, guestListHeaderCandidates.brunch),
+    rsvpStatus: findHeaderIndex(headers, guestListHeaderCandidates.rsvpStatus),
+    rsvpMeal: findHeaderIndex(headers, guestListHeaderCandidates.rsvpMeal),
+    rsvpDietaryRestrictions: findHeaderIndex(
+      headers,
+      guestListHeaderCandidates.rsvpDietaryRestrictions
+    ),
+    rsvpRehearsalDinner: findHeaderIndex(headers, guestListHeaderCandidates.rsvpRehearsalDinner),
+    rsvpBrunch: findHeaderIndex(headers, guestListHeaderCandidates.rsvpBrunch),
+    rsvpUpdatedAt: findHeaderIndex(headers, guestListHeaderCandidates.rsvpUpdatedAt),
   };
+}
+
+function requireGuestLookupColumns(columns: GuestListColumns): void {
+  if (columns.firstName >= 0 && columns.lastName >= 0) return;
+
+  console.error('verifyGuestLastName: guest name columns are not configured', {
+    firstName: columns.firstName,
+    lastName: columns.lastName,
+  });
+  throw new Error('RSVP guest list is missing a required first or last name column');
 }
 
 function responseChoice(value: unknown): 'yes' | 'no' | null {
@@ -250,10 +279,7 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
       rsvpStatus: rsvpStatusCol,
     } = columns;
 
-    if (lastNameCol < 0) {
-      console.warn('verifyGuestLastName: could not find a "Last Name" header column');
-      return { matches: [] };
-    }
+    requireGuestLookupColumns(columns);
 
     const dataRows = rows.slice(1);
     const matched: GuestMatch[] = dataRows
@@ -300,6 +326,14 @@ export async function verifyGuestLastName(lastName: string): Promise<{ matches: 
           },
         };
       });
+
+    if (matched.length > 0 && matched.every((guest) => !guest.fullName)) {
+      console.error('verifyGuestLastName: matched guests have empty full names', {
+        firstName: firstNameCol,
+        lastName: lastNameCol,
+      });
+      throw new Error('RSVP guest list returned matches without guest names');
+    }
 
     return { matches: matched };
   } catch (err) {
@@ -362,10 +396,12 @@ export async function updateGuestRsvpSnapshot(
  * regression-tested without a live Google Sheets call.
  */
 export function buildRsvpRows(rsvp: RsvpData, timestamp: string): string[][] {
+  const fullName = [rsvp.firstName, rsvp.lastName].filter(Boolean).join(' ').trim() || rsvp.name;
+
   return [
     [
       timestamp,
-      rsvp.name, // B: Full Name
+      fullName, // B: Full Name
       rsvp.lastName, // C: Last Name
       rsvp.attending || '', // D: Attending
       rsvp.meal || '', // E: Meal

@@ -53,6 +53,30 @@ async function mockGuestLookup(page: Page, matcher: (lastName: string) => GuestM
   });
 }
 
+test('guest-list configuration errors are shown instead of a false no-match result', async ({
+  page,
+}) => {
+  await page.route('**/api/rsvp/verify-guest', async (route) => {
+    await route.fulfill({
+      status: 400,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        found: false,
+        error: 'RSVP guest list is missing a required first or last name column',
+      }),
+    });
+  });
+
+  await page.goto(`${BASE}/rsvp`);
+  await page.fill('#rsvp-lastname', 'Smith');
+  await page.click('button[type="submit"]');
+
+  await expect(
+    page.getByText('The RSVP guest list is temporarily unavailable. Please contact us directly.')
+  ).toBeVisible();
+  await expect(page.getByText('No guests found with that last name.')).toBeHidden();
+});
+
 test('already-RSVPed guests can open View/Edit and land in the attending step', async ({
   page,
 }) => {

@@ -142,6 +142,14 @@ export default function RsvpForm({
         body: JSON.stringify({ lastName: query }),
       });
       const json = await res.json();
+      if (!res.ok) {
+        setSearchError(
+          json.error
+            ? 'The RSVP guest list is temporarily unavailable. Please contact us directly.'
+            : 'Something went wrong. Please try again.'
+        );
+        return;
+      }
       if (json.matches && json.matches.length > 0) {
         setMatches(json.matches);
       } else {
