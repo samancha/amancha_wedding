@@ -328,6 +328,28 @@ test('backfill skips a guest row whose live snapshot is already set', () => {
   ]);
 });
 
+test('backfill does not write to ambiguous duplicate guest-list names', () => {
+  const guests = guestListRows();
+  guests.push([...guests[1]]);
+  const plan = buildGuestSnapshotBackfill(
+    [
+      ['Timestamp', 'First Name', 'Last Name', 'Attending', 'Meal'],
+      ['2026-08-20T00:00:00.000Z', 'Bailey Invite', 'Invite', 'yes', 'beef'],
+    ],
+    guests
+  );
+
+  expect(plan.writes).toEqual([]);
+  expect(plan.conflicts).toEqual([
+    expect.objectContaining({
+      reason: 'duplicate guest-list name',
+      guestRow: 3,
+      firstName: 'bailey',
+      lastName: 'invite',
+    }),
+  ]);
+});
+
 test('backfill ignores response-sheet helper cells without RSVP timestamps', () => {
   const plan = buildGuestSnapshotBackfill(
     [

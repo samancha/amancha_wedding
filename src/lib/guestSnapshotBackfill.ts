@@ -94,6 +94,7 @@ export function buildGuestSnapshotBackfill(
   }
 
   const guestsByName = new Map<string, { row: readonly unknown[]; guestRow: number }>();
+  const ambiguousGuestNames = new Set<string>();
   guestListRows.slice(1).forEach((row, index) => {
     const firstName = normalize(row[columns.firstName]);
     const lastName = normalize(row[columns.lastName]);
@@ -103,6 +104,7 @@ export function buildGuestSnapshotBackfill(
     const guestRow = index + 2;
     if (guestsByName.has(key)) {
       plan.conflicts.push({ reason: 'duplicate guest-list name', guestRow, firstName, lastName });
+      ambiguousGuestNames.add(key);
       return;
     }
     guestsByName.set(key, { row, guestRow });
@@ -161,6 +163,10 @@ export function buildGuestSnapshotBackfill(
   });
 
   responsesByName.forEach((response, key) => {
+    if (ambiguousGuestNames.has(key)) {
+      return;
+    }
+
     const guest = guestsByName.get(key);
     if (!guest) {
       plan.unmatched.push({
