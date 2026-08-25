@@ -72,7 +72,7 @@ export type GuestRsvpSnapshot = {
   brunch?: 'yes' | 'no';
 };
 
-type GuestListColumns = {
+export type GuestListColumns = {
   firstName: number;
   lastName: number;
   guestCount: number;
@@ -112,7 +112,7 @@ function findHeaderIndex(headers: readonly unknown[], candidates: readonly strin
   return headers.findIndex((value) => candidates.includes(normalizeHeader(value)));
 }
 
-function columnToA1(columnIndex: number): string {
+export function columnToA1(columnIndex: number): string {
   let result = '';
   let value = columnIndex + 1;
 
@@ -422,7 +422,7 @@ export function buildRsvpRows(rsvp: RsvpData, timestamp: string): string[][] {
   ];
 }
 
-function isRsvpTimestamp(value: unknown): value is string {
+export function isRsvpTimestamp(value: unknown): value is string {
   return (
     typeof value === 'string' &&
     /^\d{4}-\d{2}-\d{2}T/.test(value) &&

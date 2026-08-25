@@ -12,7 +12,8 @@
     "prettier:write": "prettier --write .",
     "test": "playwright test",
     "test:mobile": "playwright test tests/playwright/mobile.spec.ts",
-    "test:ui": "playwright test --ui"
+    "test:ui": "playwright test --ui",
+    "backfill:guest-rsvp-snapshot": "node --experimental-strip-types scripts/backfill-guest-rsvp-snapshot.mjs"
   },
   "dependencies": {
     "googleapis": "^171.4.0",

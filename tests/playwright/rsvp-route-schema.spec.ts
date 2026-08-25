@@ -6,6 +6,7 @@ import {
   findNextRsvpRow,
   resolveGuestListColumns,
 } from '../../src/lib/googleSheets';
+import { buildGuestSnapshotBackfill } from '../../src/lib/guestSnapshotBackfill';
 import { createRsvpPostHandler } from '../../src/app/api/rsvp/route';
 
 const guestListHeaders = [
@@ -291,4 +292,131 @@ test('a missing saved-state header skips the guest-list write without throwing',
       '2026-08-17T02:30:00.000Z'
     )
   ).toBeNull();
+});
+
+test('backfill clears stale meal data for declined responses', () => {
+  const plan = buildGuestSnapshotBackfill(
+    [
+      ['Timestamp', 'First Name', 'Last Name', 'Attending', 'Meal'],
+      ['2026-08-20T00:00:00.000Z', 'Bailey Invite', 'Invite', 'no', 'beef'],
+    ],
+    guestListRows()
+  );
+
+  expect(plan.writes).toEqual([
+    expect.objectContaining({
+      range: 'M2:Q2',
+      values: ['', '', '', '', '2026-08-20T00:00:00.000Z'],
+    }),
+  ]);
+});
+
+test('backfill skips a guest row whose live snapshot is already set', () => {
+  const guests = guestListRows();
+  guests[1][16] = '2026-08-21T00:00:00.000Z';
+  const plan = buildGuestSnapshotBackfill(
+    [
+      ['Timestamp', 'First Name', 'Last Name', 'Attending'],
+      ['2026-08-20T00:00:00.000Z', 'Bailey Invite', 'Invite', 'yes'],
+    ],
+    guests
+  );
+
+  expect(plan.writes).toEqual([]);
+  expect(plan.skipped).toEqual([
+    expect.objectContaining({ reason: 'guest snapshot already set', guestRow: 2 }),
+  ]);
+});
+
+test('backfill does not write to ambiguous duplicate guest-list names', () => {
+  const guests = guestListRows();
+  guests.push([...guests[1]]);
+  const plan = buildGuestSnapshotBackfill(
+    [
+      ['Timestamp', 'First Name', 'Last Name', 'Attending', 'Meal'],
+      ['2026-08-20T00:00:00.000Z', 'Bailey Invite', 'Invite', 'yes', 'beef'],
+    ],
+    guests
+  );
+
+  expect(plan.writes).toEqual([]);
+  expect(plan.conflicts).toEqual([
+    expect.objectContaining({
+      reason: 'duplicate guest-list name',
+      guestRow: 3,
+      firstName: 'bailey',
+      lastName: 'invite',
+    }),
+  ]);
+});
+
+test('backfill ignores response-sheet helper cells without RSVP timestamps', () => {
+  const plan = buildGuestSnapshotBackfill(
+    [
+      ['Timestamp', 'First Name', 'Last Name', 'Attending'],
+      ['Duplicates', '', 'Count yes', '100'],
+      ['', '', 'Beef', '18'],
+    ],
+    guestListRows()
+  );
+
+  expect(plan).toMatchObject({ writes: [], skipped: [], unmatched: [], conflicts: [] });
+});
+
+test('backfill resolves the snapshot range from headers after an inserted column', () => {
+  const shiftedHeaders = [
+    ...guestListHeaders.slice(0, 12),
+    'New Column',
+    ...guestListHeaders.slice(12),
+  ];
+  const plan = buildGuestSnapshotBackfill(
+    [
+      ['Timestamp', 'First Name', 'Last Name', 'Attending', 'Meal'],
+      ['2026-08-20T00:00:00.000Z', 'Bailey Invite', 'Invite', 'yes', 'chicken'],
+    ],
+    [shiftedHeaders, ['Bailey', 'Invite']]
+  );
+
+  expect(plan.writes).toEqual([
+    expect.objectContaining({
+      range: 'N2:R2',
+      values: ['chicken', '', '', '', '2026-08-20T00:00:00.000Z'],
+    }),
+  ]);
+});
+
+test('backfill reports unmatched responses without fuzzy matching', () => {
+  const plan = buildGuestSnapshotBackfill(
+    [
+      ['Timestamp', 'First Name', 'Last Name', 'Attending'],
+      ['2026-08-20T00:00:00.000Z', 'Juan Sotelo', 'Sotelo', 'yes'],
+    ],
+    guestListRows()
+  );
+
+  expect(plan.writes).toEqual([]);
+  expect(plan.unmatched).toEqual([
+    expect.objectContaining({ responseRow: 2, firstName: 'juan', lastName: 'sotelo' }),
+  ]);
+});
+
+test('backfill selects the latest response for duplicate historical submissions', () => {
+  const plan = buildGuestSnapshotBackfill(
+    [
+      ['Timestamp', 'First Name', 'Last Name', 'Attending', 'Meal'],
+      ['2026-08-20T00:00:00.000Z', 'Bailey Invite', 'Invite', 'yes', 'beef'],
+      ['2026-08-21T00:00:00.000Z', 'Bailey Invite', 'Invite', 'yes', 'chicken'],
+    ],
+    guestListRows()
+  );
+
+  expect(plan.writes).toEqual([
+    expect.objectContaining({
+      responseRow: 3,
+      values: ['chicken', '', '', '', '2026-08-21T00:00:00.000Z'],
+    }),
+  ]);
+  expect(plan.conflicts).toEqual([
+    expect.objectContaining({ reason: 'multiple responses for guest; latest timestamp selected' }),
+  ]);
 });
