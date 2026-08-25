@@ -6,6 +6,7 @@ import {
   findNextRsvpRow,
   resolveGuestListColumns,
 } from '../../src/lib/googleSheets';
+import { createRsvpPostHandler } from '../../src/app/api/rsvp/route';
 
 const guestListHeaders = [
   'First Name',
@@ -75,6 +76,20 @@ test('the response row maps meal, allergies, rehearsal dinner, and brunch to E/F
   expect(primaryRow[7]).toBe('yes');
 });
 
+test('the response full-name column prefers explicit first and last names', () => {
+  const [primaryRow] = buildRsvpRows(
+    {
+      name: 'Invite',
+      firstName: 'Bailey',
+      lastName: 'Invite',
+    },
+    '2026-08-15T00:00:00.000Z'
+  );
+
+  expect(primaryRow[1]).toBe('Bailey Invite');
+  expect(primaryRow[2]).toBe('Invite');
+});
+
 test('omitted optional event choices remain blank rather than invented', () => {
   const [primaryRow] = buildRsvpRows(
     {
@@ -138,6 +153,69 @@ test('guest-list header matching keeps saved answers distinct from invitation el
   expect(columns.rehearsalDinner).toBe(3);
   expect(columns.rsvpRehearsalDinner).toBe(2);
   expect(columns.rsvpStatus).toBe(5);
+});
+
+test('guest-list lookup still resolves abbreviated first and last headers', () => {
+  const columns = resolveGuestListColumns(['First', 'Last', 'Guest Count', 'RSVP Status']);
+
+  expect(columns.firstName).toBe(0);
+  expect(columns.lastName).toBe(1);
+  expect(columns.guestCount).toBe(2);
+  expect(columns.rsvpStatus).toBe(3);
+});
+
+test('guest-list lookup does not mistake Last Updated for Last Name', () => {
+  const columns = resolveGuestListColumns(['First', 'Last Updated', 'Guest Count']);
+
+  expect(columns.firstName).toBe(0);
+  expect(columns.lastName).toBe(-1);
+});
+
+test('the RSVP route normalizes names before writing the response and guest snapshot', async () => {
+  const appended: unknown[] = [];
+  const snapshots: unknown[][] = [];
+  const post = createRsvpPostHandler({
+    appendToGoogleSheet: async (rsvp) => {
+      appended.push(rsvp);
+    },
+    updateGuestRsvpSnapshot: async (...args) => {
+      snapshots.push(args);
+    },
+  });
+
+  const response = await post(
+    new Request('http://localhost/api/rsvp', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: 'Invite',
+        firstName: 'Bailey',
+        lastName: 'Invite',
+        attending: 'yes',
+        meal: 'chicken',
+        allergies: 'Shellfish allergy',
+        rehearsalDinner: 'yes',
+        brunch: 'no',
+      }),
+    })
+  );
+
+  expect(response.status).toBe(201);
+  expect(appended).toEqual([
+    expect.objectContaining({ name: 'Bailey Invite', firstName: 'Bailey', lastName: 'Invite' }),
+  ]);
+  expect(snapshots).toEqual([
+    [
+      'Bailey',
+      'Invite',
+      {
+        attending: 'yes',
+        meal: 'chicken',
+        allergies: 'Shellfish allergy',
+        rehearsalDinner: 'yes',
+        brunch: 'no',
+      },
+    ],
+  ]);
 });
 
 test('an accepted RSVP writes status and the complete M:Q-style saved snapshot', () => {
