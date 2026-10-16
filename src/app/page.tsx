@@ -802,8 +802,8 @@ export default function Home() {
                 Shuttle Service
               </h3>
               <p>
-                A complimentary shuttle will run between the hotel and the venue throughout the
-                evening. No need to worry about a designated driver — we&apos;ve got you covered.
+                A complimentary shuttle will run between the hotel and the venue from 3:30 to 4:00
+                PM. No need to worry about a designated driver — we&apos;ve got you covered.
               </p>
             </div>
             <div>
@@ -1044,20 +1044,29 @@ export default function Home() {
 
               {[
                 {
-                  time: 'TBD',
-                  label: 'Shuttle Departs Hotel',
-                  desc: 'Complimentary shuttle from the hotel to the venue',
+                  time: '3:30–4:00 PM',
+                  label: 'Shuttle Service',
+                  desc: 'Complimentary shuttle runs hotel → venue during this window',
                 },
                 {
-                  time: 'TBD',
+                  time: '4:00 PM',
                   label: 'Guests Arrive',
-                  desc: 'Welcome to the celebration — find your seat and enjoy the scenery',
+                  desc: 'Guests are welcome from 4:00',
                 },
-                { time: '5:00 PM', label: 'Ceremony', desc: 'The moment we have been waiting for' },
+                {
+                  time: '4:15–4:45 PM',
+                  label: 'Happy Hour',
+                  desc: 'First half of happy hour, before the ceremony',
+                },
+                {
+                  time: '5:00 PM',
+                  label: 'Ceremony',
+                  desc: 'Please be seated by 5:00',
+                },
                 {
                   time: '5:30 PM',
-                  label: 'Cocktail Hour',
-                  desc: 'Drinks, canapés, and good company on the grounds',
+                  label: 'Happy Hour Continues',
+                  desc: 'Second half of happy hour; the barn and indoor bar open',
                 },
                 {
                   time: '7:00 PM',
@@ -1070,14 +1079,9 @@ export default function Home() {
                   desc: 'The floor is open — come celebrate with us',
                 },
                 {
-                  time: '9:00 PM',
-                  label: 'Late Night Bites',
-                  desc: 'A little something to keep the energy going',
-                },
-                {
-                  time: '10:30 PM',
-                  label: 'Grand Exit',
-                  desc: 'Walk it out — send us off in style',
+                  time: '10:15 PM',
+                  label: 'Last Dance',
+                  desc: 'The final song',
                 },
               ].map((event, i) => (
                 <div key={i} className="relative mb-8 last:mb-0" style={{ paddingLeft: 16 }}>
@@ -1146,46 +1150,46 @@ export default function Home() {
               <div style={{ display: 'flex', alignItems: 'stretch' }}>
                 {[
                   {
-                    time: 'TBD',
-                    label: 'Shuttle Departs',
-                    desc: 'Complimentary shuttle from the hotel',
+                    time: '3:30–4:00 PM',
+                    label: 'Shuttle Service',
+                    desc: 'Complimentary shuttle runs hotel → venue during this window',
                     above: true,
                   },
                   {
-                    time: 'TBD',
+                    time: '4:00 PM',
                     label: 'Guests Arrive',
-                    desc: 'Find your seat and enjoy the scenery',
+                    desc: 'Guests are welcome from 4:00',
                     above: false,
+                  },
+                  {
+                    time: '4:15–4:45 PM',
+                    label: 'Happy Hour',
+                    desc: 'First half, before the ceremony',
+                    above: true,
                   },
                   {
                     time: '5:00 PM',
                     label: 'Ceremony',
-                    desc: 'The moment we have been waiting for',
-                    above: true,
+                    desc: 'Please be seated by 5:00',
+                    above: false,
                   },
                   {
                     time: '5:30 PM',
-                    label: 'Cocktail Hour',
-                    desc: 'Drinks and canapés on the grounds',
-                    above: false,
+                    label: 'Happy Hour Continues',
+                    desc: 'Second half; the barn and indoor bar open',
+                    above: true,
                   },
                   {
                     time: '7:00 PM',
                     label: 'Dinner',
                     desc: 'A seated reception dinner',
-                    above: true,
+                    above: false,
                   },
-                  { time: '8:00 PM', label: 'Dancing', desc: 'The floor is open', above: false },
+                  { time: '8:00 PM', label: 'Dancing', desc: 'The floor is open', above: true },
                   {
-                    time: '9:00 PM',
-                    label: 'Late Night Bites',
-                    desc: 'Keep the energy going',
-                    above: true,
-                  },
-                  {
-                    time: '10:30 PM',
-                    label: 'Grand Exit',
-                    desc: 'Walk it out — send us off',
+                    time: '10:15 PM',
+                    label: 'Last Dance',
+                    desc: 'The final song',
                     above: false,
                   },
                 ].map((event, i) => (
